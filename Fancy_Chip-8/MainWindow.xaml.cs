@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Fancy_Chip_8.Core;
 using Microsoft.Win32;
+using System.IO;
 
 namespace Fancy_Chip_8
 {
@@ -45,7 +46,11 @@ namespace Fancy_Chip_8
         private void CommandOpen_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-
+            if (openFileDialog.ShowDialog() == true)
+            {
+                Manager.Instance.LoadProgramm(File.ReadAllBytes(openFileDialog.FileName));
+            }
+            Manager.Instance.Run();
         }
     }
 }

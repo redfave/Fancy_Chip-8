@@ -6,7 +6,25 @@
         xmlns:local="clr-namespace:Fancy_Chip_8"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
+    <Window.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.Close" CanExecute="CommandClose_CanExecute"
+                        Executed="CommandClose_Executed"/>
+        <CommandBinding Command="ApplicationCommands.Open" CanExecute="CommandOpen_CanExecute"
+                        Executed="CommandOpen_Executed"/>
+    </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Command="ApplicationCommands.Close" Key="Esc"/>
+    </Window.InputBindings>
     <Grid>
-        
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="File">
+                    <MenuItem Header="Open" Command="ApplicationCommands.Open"></MenuItem>
+                    <MenuItem Header="Exit" Command="ApplicationCommands.Close" InputGestureText="Esc">
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="About"></MenuItem>
+            </Menu>
+        </DockPanel>
     </Grid>
 </Window>

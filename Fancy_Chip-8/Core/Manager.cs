@@ -32,24 +32,44 @@ namespace Fancy_Chip_8.Core
 
         private void Interpret()
         {
-            //fetch
-            byte[] currentInstruction = { Cpu.Instance.memory[Cpu.Instance.programmCounter],
-                Cpu.Instance.memory[Cpu.Instance.programmCounter+1] };
-            IncreaseProgrammCount();
-
+            //FETCH
+            ushort currentInstruction = Cpu.Instance.memory[Cpu.Instance.programmCounter];
+            currentInstruction = (ushort)(currentInstruction << 8);
+            currentInstruction = (ushort)(currentInstruction | Cpu.Instance.memory[Cpu.Instance.programmCounter + 1]);
+            /** DECODE
+            http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#3.0 **/
+            ushort address = (ushort)(currentInstruction << 4);
+            address = (ushort)(address >> 4);
+            byte kk = Cpu.Instance.memory[Cpu.Instance.programmCounter + 1];
+            byte n = (byte)(kk << 4);
+            n = (byte)(n >> 4);
+            byte y = (byte)(kk >> 4);
+            byte x = (byte)(Cpu.Instance.memory[Cpu.Instance.programmCounter] << 4);
+            x = (byte)(x >> 4);
+            Instructions.IncreaseProgrammCount();
+            byte op = (byte) (currentInstruction >> 12);
+            //EXECUTE AND STORE
+            switch (op)
+            {
+                case 0x0:
+                    if (kk == 0xE0)
+                    {
+                       Instructions.ClearDisplay();
+                    } else if (kk == 0xEE)
+                    {
+                        Instructions.ReturnFromSubroutine();
+                    }
+                    break;
+                case 0x1:
+                    Instructions.JumpToAddress(address);
+                    break;
+                case 0x2:
+                    Instructions.CallSubroutine(address);
+                    break;
+            }
         }
 
-        private void IncreaseProgrammCount()
-        {
-            if (Cpu.Instance.programmCounter % 2 == 0)
-            {
-                Cpu.Instance.programmCounter += 2;
-            }
-            else
-            {
-                //TODO throw error (something went horribly wrong)
-            }
-        }
+
 
         private void ExecuteCycle()
         {
@@ -67,10 +87,11 @@ namespace Fancy_Chip_8.Core
             }
         }
 
+
+
         public void LoadProgramm(byte[] programm)
         {
             //TODO check if file is legit
-            Cpu.Instance.Init();
             Array.Copy(programm, 0, Cpu.Instance.memory, Cpu.Instance.programmCounter, programm.Length);
         }
     }

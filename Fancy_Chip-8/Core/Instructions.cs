@@ -42,5 +42,39 @@ namespace Fancy_Chip_8.Core
             Cpu.Instance.stack.Push(Cpu.Instance.programmCounter);
             Cpu.Instance.programmCounter = addr;
         }
+
+        public static void SkipIfXIsEqual(byte x, byte kk)
+        {
+            if (Cpu.Instance.registerV[x] == kk)
+            {
+                IncreaseProgrammCount();
+            }
+        }
+
+        public static void SkipIfXIsNotEqual(byte x, byte kk)
+        {
+            if (Cpu.Instance.registerV[x] != kk)
+            {
+                IncreaseProgrammCount();
+            }
+        }
+
+        public static void SkipIfXIsEqualY(byte x, byte y)
+        {
+            if (Cpu.Instance.registerV[x] == Cpu.Instance.registerV[y])
+            {
+                IncreaseProgrammCount();
+            }
+        }
+
+        public static void SetX(byte x, byte kk)
+        {
+            Cpu.Instance.registerV[x] = kk;
+        }
+
+        public static void AddX(byte x, byte kk)
+        {
+            Cpu.Instance.registerV[x] += kk;
+        }
     }
 }

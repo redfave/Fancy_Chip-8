@@ -63,6 +63,21 @@ namespace Fancy_Chip_8.Core
                 case 0x2:
                     Instructions.CallSubroutine(address);
                     break;
+                case 0x3:
+                    Instructions.SkipIfXIsEqual(x, kk);
+                    break;
+                case 0x4:
+                    Instructions.SkipIfXIsNotEqual(x, kk);
+                    break;
+                case 0x5:
+                    Instructions.SkipIfXIsEqualY(x, y);
+                    break;
+                case 0x6:
+                    Instructions.SetX(x, kk);
+                    break;
+                case 0x7:
+                    Instructions.AddX(x, kk);
+                    break;
             }
         }
 

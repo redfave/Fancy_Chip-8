@@ -33,29 +33,26 @@ namespace Fancy_Chip_8.Core
         private void Interpret()
         {
             //FETCH
-            ushort currentInstruction = Cpu.Instance.memory[Cpu.Instance.programmCounter];
-            currentInstruction = (ushort)(currentInstruction << 8);
-            currentInstruction = (ushort)(currentInstruction | Cpu.Instance.memory[Cpu.Instance.programmCounter + 1]);
+            ushort currentInstruction = (ushort)(Cpu.Instance.memory[Cpu.Instance.programmCounter] << 8
+                | Cpu.Instance.memory[Cpu.Instance.programmCounter + 1]);
             /** DECODE
             http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#3.0 **/
-            ushort address = (ushort)(currentInstruction << 4);
-            address = (ushort)(address >> 4);
+            ushort address = (ushort)(currentInstruction & 0x0FFF);
             byte kk = Cpu.Instance.memory[Cpu.Instance.programmCounter + 1];
-            byte n = (byte)(kk << 4);
-            n = (byte)(n >> 4);
+            byte n = (byte)(currentInstruction & 0x000F);
             byte y = (byte)(kk >> 4);
-            byte x = (byte)(Cpu.Instance.memory[Cpu.Instance.programmCounter] << 4);
-            x = (byte)(x >> 4);
+            byte x = (byte)(currentInstruction >> 8 & 0x0F);
+            byte op = (byte)(currentInstruction >> 12);
             Instructions.IncreaseProgrammCount();
-            byte op = (byte) (currentInstruction >> 12);
             //EXECUTE AND STORE
             switch (op)
             {
                 case 0x0:
                     if (kk == 0xE0)
                     {
-                       Instructions.ClearDisplay();
-                    } else if (kk == 0xEE)
+                        Instructions.ClearDisplay();
+                    }
+                    else if (kk == 0xEE)
                     {
                         Instructions.ReturnFromSubroutine();
                     }

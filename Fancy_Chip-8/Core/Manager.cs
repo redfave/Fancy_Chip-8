@@ -8,12 +8,6 @@ namespace Fancy_Chip_8.Core
 {
     public sealed class Manager
     {
-        //Singleton pattern
-        private Manager() { }
-        private static readonly Lazy<Manager> lazy = new Lazy<Manager>(() => new Manager());
-        public static Manager Instance { get { return lazy.Value; } }
-
-
         private bool _CpuIsRunning;
 
         public bool CpuIsRunning

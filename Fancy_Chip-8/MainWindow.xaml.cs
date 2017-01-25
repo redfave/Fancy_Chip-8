@@ -23,6 +23,7 @@ namespace Fancy_Chip_8
     /// </summary>
     public partial class MainWindow : Window
     {
+        Manager manager = new Manager();
         public MainWindow()
         {
             InitializeComponent();
@@ -48,9 +49,9 @@ namespace Fancy_Chip_8
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
             {
-                Manager.Instance.LoadProgram(File.ReadAllBytes(openFileDialog.FileName));
+                manager.LoadProgram(File.ReadAllBytes(openFileDialog.FileName));
             }
-            Manager.Instance.Run();
+            manager.Run();
         }
     }
 }

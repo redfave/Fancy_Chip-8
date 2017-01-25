@@ -8,11 +8,11 @@ namespace Fancy_Chip_8.Core
 {
     public static class Instructions
     {
-        public static void IncreaseProgrammCount()
+        public static void IncreaseProgramCount()
         {
-            if (Cpu.Instance.programmCounter % 2 == 0)
+            if (Cpu.Instance.programCounter % 2 == 0)
             {
-                Cpu.Instance.programmCounter += 2;
+                Cpu.Instance.programCounter += 2;
             }
             else
             {
@@ -29,25 +29,25 @@ namespace Fancy_Chip_8.Core
 
         public static void ReturnFromSubroutine()
         {
-            Cpu.Instance.programmCounter = Cpu.Instance.stack.Pop();
+            Cpu.Instance.programCounter = Cpu.Instance.stack.Pop();
         }
 
         public static void JumpToAddress(ushort addr)
         {
-            Cpu.Instance.programmCounter = addr;
+            Cpu.Instance.programCounter = addr;
         }
 
         public static void CallSubroutine(ushort addr)
         {
-            Cpu.Instance.stack.Push(Cpu.Instance.programmCounter);
-            Cpu.Instance.programmCounter = addr;
+            Cpu.Instance.stack.Push(Cpu.Instance.programCounter);
+            Cpu.Instance.programCounter = addr;
         }
 
         public static void SkipIfXIsEqual(byte x, byte kk)
         {
             if (Cpu.Instance.registerV[x] == kk)
             {
-                IncreaseProgrammCount();
+                IncreaseProgramCount();
             }
         }
 
@@ -55,7 +55,7 @@ namespace Fancy_Chip_8.Core
         {
             if (Cpu.Instance.registerV[x] != kk)
             {
-                IncreaseProgrammCount();
+                IncreaseProgramCount();
             }
         }
 
@@ -63,7 +63,7 @@ namespace Fancy_Chip_8.Core
         {
             if (Cpu.Instance.registerV[x] == Cpu.Instance.registerV[y])
             {
-                IncreaseProgrammCount();
+                IncreaseProgramCount();
             }
         }
 

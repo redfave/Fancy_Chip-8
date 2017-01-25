@@ -48,7 +48,7 @@ namespace Fancy_Chip_8
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (openFileDialog.ShowDialog() == true)
             {
-                Manager.Instance.LoadProgramm(File.ReadAllBytes(openFileDialog.FileName));
+                Manager.Instance.LoadProgram(File.ReadAllBytes(openFileDialog.FileName));
             }
             Manager.Instance.Run();
         }

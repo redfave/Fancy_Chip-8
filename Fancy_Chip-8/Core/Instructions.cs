@@ -76,5 +76,39 @@ namespace Fancy_Chip_8.Core
         {
             Cpu.Instance.registerV[x] += kk;
         }
+
+        public static void SetXToY(byte x, byte y)
+        {
+            Cpu.Instance.registerV[x] = Cpu.Instance.registerV[y];
+        }
+        public static void OrXAndY(byte x, byte y)
+        {
+            Cpu.Instance.registerV[x] = (byte)(Cpu.Instance.registerV[x] | Cpu.Instance.registerV[y]);
+        }
+
+        public static void AndXAndY(byte x, byte y)
+        {
+            Cpu.Instance.registerV[x] = (byte)(Cpu.Instance.registerV[x] & Cpu.Instance.registerV[y]);
+        }
+
+        public static void XorXAndY(byte x, byte y)
+        {
+            Cpu.Instance.registerV[x] = (byte)(Cpu.Instance.registerV[x] ^ Cpu.Instance.registerV[y]);
+        }
+
+        public static void AddXAndY(byte x, byte y)
+        {
+            ushort sum = (ushort)(x + y);
+            if (sum > 0xFF)
+            {
+                Cpu.Instance.registerV[0xF] = 0x01;
+                Cpu.Instance.registerV[x] = Convert.ToByte(sum);
+            }
+            else
+            {
+                Cpu.Instance.registerV[0xF] = 0x00;
+                Cpu.Instance.registerV[x] = Convert.ToByte(sum);
+            }
+        }
     }
 }

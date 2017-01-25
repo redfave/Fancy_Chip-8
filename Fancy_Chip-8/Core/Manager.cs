@@ -26,27 +26,23 @@ namespace Fancy_Chip_8.Core
 
         private void Interpret()
         {
-            //FETCH
-            ushort currentInstruction = (ushort)(Cpu.Instance.memory[Cpu.Instance.programCounter] << 8
-                | Cpu.Instance.memory[Cpu.Instance.programCounter + 1]);
-            /** DECODE
-            http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#3.0 **/
-            ushort address = (ushort)(currentInstruction & 0x0FFF);
-            byte kk = Cpu.Instance.memory[Cpu.Instance.programCounter + 1];
-            byte n = (byte)(currentInstruction & 0x000F);
-            byte y = (byte)(kk >> 4);
-            byte x = (byte)(currentInstruction >> 8 & 0x0F);
-            byte op = (byte)(currentInstruction >> 12);
+            //http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#3.0 
+            ushort address = (ushort)(Cpu.Instance.memory[Cpu.Instance.programCounter] << 8 & 0x0FFF | Cpu.Instance.memory[Cpu.Instance.programCounter + 1]);
+            byte lowerByte = Cpu.Instance.memory[Cpu.Instance.programCounter + 1];
+            byte n = (byte)(Cpu.Instance.memory[Cpu.Instance.programCounter + 1] & 0x0F);
+            byte y = (byte)(lowerByte >> 4);
+            byte x = (byte)(Cpu.Instance.memory[Cpu.Instance.programCounter] & 0x0F);
+            byte instructionType = (byte)(Cpu.Instance.memory[Cpu.Instance.programCounter] & 0xF0);
             Instructions.IncreaseProgramCount();
             //EXECUTE AND STORE
-            switch (op)
+            switch (instructionType)
             {
                 case 0x0:
-                    if (kk == 0xE0)
+                    if (lowerByte == 0xE0)
                     {
                         Instructions.ClearDisplay();
                     }
-                    else if (kk == 0xEE)
+                    else if (lowerByte == 0xEE)
                     {
                         Instructions.ReturnFromSubroutine();
                     }
@@ -58,19 +54,54 @@ namespace Fancy_Chip_8.Core
                     Instructions.CallSubroutine(address);
                     break;
                 case 0x3:
-                    Instructions.SkipIfXIsEqual(x, kk);
+                    Instructions.SkipIfXIsEqual(x, lowerByte);
                     break;
                 case 0x4:
-                    Instructions.SkipIfXIsNotEqual(x, kk);
+                    Instructions.SkipIfXIsNotEqual(x, lowerByte);
                     break;
                 case 0x5:
                     Instructions.SkipIfXIsEqualY(x, y);
                     break;
                 case 0x6:
-                    Instructions.SetX(x, kk);
+                    Instructions.SetX(x, lowerByte);
                     break;
                 case 0x7:
-                    Instructions.AddX(x, kk);
+                    Instructions.AddX(x, lowerByte);
+                    break;
+                case 0x8:
+                    switch (n)
+                    {
+                        case 0x0:
+                            Instructions.SetXToY(x, y);
+                            break;
+                        case 0x1:
+                            Instructions.OrXAndY(x, y);
+                            break;
+                        case 0x2:
+                            Instructions.AndXAndY(x, y);
+                            break;
+                        case 0x3:
+                            Instructions.XorXAndY(x, y);
+                            break;
+                        case 0x4:
+
+                            break;
+                        case 0x5:
+
+                            break;
+                        case 0x6:
+
+                            break;
+                        case 0x7:
+
+                            break;
+                        case 0xE:
+
+                            break;
+                    }
+                    break;
+                case 0x9:
+
                     break;
             }
         }

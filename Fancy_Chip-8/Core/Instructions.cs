@@ -6,13 +6,23 @@ using System.Threading.Tasks;
 
 namespace Fancy_Chip_8.Core
 {
-    public static class Instructions
+    public class Instructions
     {
-        public static void IncreaseProgramCount()
+        private Cpu _Cpu1 = new Cpu();
+
+        public Cpu Cpu1
         {
-            if (Cpu.Instance.programCounter % 2 == 0)
+            get
             {
-                Cpu.Instance.programCounter += 2;
+                return _Cpu1;
+            }
+        }
+
+        public void IncreaseProgramCount()
+        {
+            if (Cpu1.programCounter % 2 == 0)
+            {
+                Cpu1.programCounter += 2;
             }
             else
             {
@@ -21,93 +31,99 @@ namespace Fancy_Chip_8.Core
             }
         }
 
-        public static void ClearDisplay()
+        public void WriteToMemory(byte[] program)
         {
-            for (int i = 0; i < Cpu.Instance.screen.Length; i++)
-            { Cpu.Instance.screen[i] = false; }
+            //TODO check if file is legit
+            Array.Copy(program, 0, Cpu1.memory, Cpu1.programCounter, program.Length);
         }
 
-        public static void ReturnFromSubroutine()
+        public void ClearDisplay()
         {
-            Cpu.Instance.programCounter = Cpu.Instance.stack.Pop();
+            for (int i = 0; i < Cpu1.screen.Length; i++)
+            { Cpu1.screen[i] = false; }
         }
 
-        public static void JumpToAddress(ushort addr)
+        public void ReturnFromSubroutine()
         {
-            Cpu.Instance.programCounter = addr;
+            Cpu1.programCounter = Cpu1.stack.Pop();
         }
 
-        public static void CallSubroutine(ushort addr)
+        public void JumpToAddress(ushort addr)
         {
-            Cpu.Instance.stack.Push(Cpu.Instance.programCounter);
-            Cpu.Instance.programCounter = addr;
+            Cpu1.programCounter = addr;
         }
 
-        public static void SkipIfXIsEqual(byte x, byte kk)
+        public void CallSubroutine(ushort addr)
         {
-            if (Cpu.Instance.registerV[x] == kk)
+            Cpu1.stack.Push(Cpu1.programCounter);
+            Cpu1.programCounter = addr;
+        }
+
+        public void SkipIfXIsEqual(byte x, byte kk)
+        {
+            if (Cpu1.registerV[x] == kk)
             {
                 IncreaseProgramCount();
             }
         }
 
-        public static void SkipIfXIsNotEqual(byte x, byte kk)
+        public void SkipIfXIsNotEqual(byte x, byte kk)
         {
-            if (Cpu.Instance.registerV[x] != kk)
+            if (Cpu1.registerV[x] != kk)
             {
                 IncreaseProgramCount();
             }
         }
 
-        public static void SkipIfXIsEqualY(byte x, byte y)
+        public void SkipIfXIsEqualY(byte x, byte y)
         {
-            if (Cpu.Instance.registerV[x] == Cpu.Instance.registerV[y])
+            if (Cpu1.registerV[x] == Cpu1.registerV[y])
             {
                 IncreaseProgramCount();
             }
         }
 
-        public static void SetX(byte x, byte kk)
+        public void SetX(byte x, byte kk)
         {
-            Cpu.Instance.registerV[x] = kk;
+            Cpu1.registerV[x] = kk;
         }
 
-        public static void AddX(byte x, byte kk)
+        public void AddX(byte x, byte kk)
         {
-            Cpu.Instance.registerV[x] += kk;
+            Cpu1.registerV[x] += kk;
         }
 
-        public static void SetXToY(byte x, byte y)
+        public void SetXToY(byte x, byte y)
         {
-            Cpu.Instance.registerV[x] = Cpu.Instance.registerV[y];
+            Cpu1.registerV[x] = Cpu1.registerV[y];
         }
-        public static void OrXAndY(byte x, byte y)
+        public void OrXAndY(byte x, byte y)
         {
-            Cpu.Instance.registerV[x] = (byte)(Cpu.Instance.registerV[x] | Cpu.Instance.registerV[y]);
-        }
-
-        public static void AndXAndY(byte x, byte y)
-        {
-            Cpu.Instance.registerV[x] = (byte)(Cpu.Instance.registerV[x] & Cpu.Instance.registerV[y]);
+            Cpu1.registerV[x] = (byte)(Cpu1.registerV[x] | Cpu1.registerV[y]);
         }
 
-        public static void XorXAndY(byte x, byte y)
+        public void AndXAndY(byte x, byte y)
         {
-            Cpu.Instance.registerV[x] = (byte)(Cpu.Instance.registerV[x] ^ Cpu.Instance.registerV[y]);
+            Cpu1.registerV[x] = (byte)(Cpu1.registerV[x] & Cpu1.registerV[y]);
         }
 
-        public static void AddXAndY(byte x, byte y)
+        public void XorXAndY(byte x, byte y)
+        {
+            Cpu1.registerV[x] = (byte)(Cpu1.registerV[x] ^ Cpu1.registerV[y]);
+        }
+
+        public void AddXAndY(byte x, byte y)
         {
             ushort sum = (ushort)(x + y);
             if (sum > 0xFF)
             {
-                Cpu.Instance.registerV[0xF] = 0x01;
-                Cpu.Instance.registerV[x] = Convert.ToByte(sum);
+                Cpu1.registerV[0xF] = 0x01;
+                Cpu1.registerV[x] = Convert.ToByte(sum);
             }
             else
             {
-                Cpu.Instance.registerV[0xF] = 0x00;
-                Cpu.Instance.registerV[x] = Convert.ToByte(sum);
+                Cpu1.registerV[0xF] = 0x00;
+                Cpu1.registerV[x] = Convert.ToByte(sum);
             }
         }
     }

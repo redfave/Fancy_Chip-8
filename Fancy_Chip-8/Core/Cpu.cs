@@ -9,13 +9,11 @@ namespace Fancy_Chip_8.Core
 {
     public sealed class Cpu
     {
-        //Singleton pattern
-        private Cpu()
+
+        public Cpu()
         {
             Reset();
         }
-        private static readonly Lazy<Cpu> lazy = new Lazy<Cpu>(() => new Cpu());
-        public static Cpu Instance { get { return lazy.Value; } }
 
         public byte[] memory;
         public byte[] registerV;
@@ -37,7 +35,7 @@ namespace Fancy_Chip_8.Core
             programCounter = 512;
             delayTimer = 0;
             soundTimer = 0;
-            screen = new bool[SceenWidth*SceenHeight];
+            screen = new bool[SceenWidth * SceenHeight];
             stack = new Stack<ushort>(16);
             //Fill memory with sprites of HEX-chars
             byte[] hexSprites = { 0xF0, 0x90, 0x90, 0x90, 0xF0,  //0

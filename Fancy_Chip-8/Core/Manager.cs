@@ -9,6 +9,7 @@ namespace Fancy_Chip_8.Core
     public sealed class Manager
     {
         private bool _CpuIsRunning;
+        private Instructions myInstructions = new Instructions();
 
         public bool CpuIsRunning
         {
@@ -26,62 +27,69 @@ namespace Fancy_Chip_8.Core
 
         private void Interpret()
         {
-            //http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#3.0 
-            ushort address = (ushort)(Cpu.Instance.memory[Cpu.Instance.programCounter] << 8 & 0x0FFF | Cpu.Instance.memory[Cpu.Instance.programCounter + 1]);
-            byte lowerByte = Cpu.Instance.memory[Cpu.Instance.programCounter + 1];
-            byte n = (byte)(Cpu.Instance.memory[Cpu.Instance.programCounter + 1] & 0x0F);
+            /**
+              nnn or addr - A 12-bit value, the lowest 12 bits of the instruction
+              n or nibble - A 4-bit value, the lowest 4 bits of the instruction
+              x - A 4-bit value, the lower 4 bits of the high byte of the instruction
+              y - A 4-bit value, the upper 4 bits of the low byte of the instruction
+              kk or byte - An 8-bit value, the lowest 8 bits of the instruction
+              http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#3.0 
+             **/
+            ushort address = (ushort)(myInstructions.Cpu1.memory[myInstructions.Cpu1.programCounter] << 8 & 0x0FFF
+                | myInstructions.Cpu1.memory[myInstructions.Cpu1.programCounter + 1]);
+            byte lowerByte = myInstructions.Cpu1.memory[myInstructions.Cpu1.programCounter + 1];
+            byte n = (byte)(myInstructions.Cpu1.memory[myInstructions.Cpu1.programCounter + 1] & 0x0F);
             byte y = (byte)(lowerByte >> 4);
-            byte x = (byte)(Cpu.Instance.memory[Cpu.Instance.programCounter] & 0x0F);
-            byte instructionType = (byte)(Cpu.Instance.memory[Cpu.Instance.programCounter] & 0xF0);
-            Instructions.IncreaseProgramCount();
-            //EXECUTE AND STORE
+            byte x = (byte)(myInstructions.Cpu1.memory[myInstructions.Cpu1.programCounter] & 0x0F);
+            byte instructionType = (byte)(myInstructions.Cpu1.memory[myInstructions.Cpu1.programCounter]  >> 4);
+            myInstructions.IncreaseProgramCount();
             switch (instructionType)
             {
                 case 0x0:
                     if (lowerByte == 0xE0)
                     {
-                        Instructions.ClearDisplay();
+                        myInstructions.ClearDisplay();
                     }
                     else if (lowerByte == 0xEE)
                     {
-                        Instructions.ReturnFromSubroutine();
+                        myInstructions.ReturnFromSubroutine();
                     }
                     break;
                 case 0x1:
-                    Instructions.JumpToAddress(address);
+                    myInstructions.JumpToAddress(address);
                     break;
                 case 0x2:
-                    Instructions.CallSubroutine(address);
+                    myInstructions.CallSubroutine(address);
                     break;
                 case 0x3:
-                    Instructions.SkipIfXIsEqual(x, lowerByte);
+                    myInstructions.SkipIfXIsEqual(x, lowerByte);
                     break;
                 case 0x4:
-                    Instructions.SkipIfXIsNotEqual(x, lowerByte);
+                    myInstructions.SkipIfXIsNotEqual(x, lowerByte);
                     break;
                 case 0x5:
-                    Instructions.SkipIfXIsEqualY(x, y);
+                    myInstructions.SkipIfXIsEqualY(x, y);
                     break;
                 case 0x6:
-                    Instructions.SetX(x, lowerByte);
+                    myInstructions.SetX(x, lowerByte);
                     break;
                 case 0x7:
-                    Instructions.AddX(x, lowerByte);
+                    myInstructions.AddX(x, lowerByte);
                     break;
                 case 0x8:
                     switch (n)
                     {
                         case 0x0:
-                            Instructions.SetXToY(x, y);
+                            myInstructions.SetXToY(x, y);
                             break;
                         case 0x1:
-                            Instructions.OrXAndY(x, y);
+                            myInstructions.OrXAndY(x, y);
                             break;
                         case 0x2:
-                            Instructions.AndXAndY(x, y);
+                            myInstructions.AndXAndY(x, y);
                             break;
                         case 0x3:
-                            Instructions.XorXAndY(x, y);
+                            myInstructions.XorXAndY(x, y);
                             break;
                         case 0x4:
 
@@ -129,7 +137,7 @@ namespace Fancy_Chip_8.Core
         public void LoadProgram(byte[] program)
         {
             //TODO check if file is legit
-            Array.Copy(program, 0, Cpu.Instance.memory, Cpu.Instance.programCounter, program.Length);
+            myInstructions.WriteToMemory(program);
         }
     }
 }

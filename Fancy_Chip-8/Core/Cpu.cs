@@ -19,10 +19,11 @@ namespace Fancy_Chip_8.Core
         public byte[] registerV;
         public ushort index;
         public ushort programCounter;
+        public ushort programStart = 512;
         public byte delayTimer;
         public byte soundTimer;
-        public const ushort SceenWidth = 64;
-        public const ushort SceenHeight = 32;
+        public ushort SceenWidth = 64;
+        public ushort SceenHeight = 32;
         public bool[] screen;
         public Stack<ushort> stack;
 
@@ -32,7 +33,7 @@ namespace Fancy_Chip_8.Core
             memory = new byte[4096];
             registerV = new byte[16];
             index = 0;
-            programCounter = 512;
+            programCounter = programStart;
             delayTimer = 0;
             soundTimer = 0;
             screen = new bool[SceenWidth * SceenHeight];

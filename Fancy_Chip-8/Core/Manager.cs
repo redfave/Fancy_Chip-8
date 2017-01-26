@@ -18,7 +18,7 @@ namespace Fancy_Chip_8.Core
                 return _CpuIsRunning;
             }
 
-            set
+            private set
             {
                 _CpuIsRunning = value;
             }
@@ -41,7 +41,7 @@ namespace Fancy_Chip_8.Core
             byte n = (byte)(myInstructions.Cpu1.memory[myInstructions.Cpu1.programCounter + 1] & 0x0F);
             byte y = (byte)(lowerByte >> 4);
             byte x = (byte)(myInstructions.Cpu1.memory[myInstructions.Cpu1.programCounter] & 0x0F);
-            byte instructionType = (byte)(myInstructions.Cpu1.memory[myInstructions.Cpu1.programCounter]  >> 4);
+            byte instructionType = (byte)(myInstructions.Cpu1.memory[myInstructions.Cpu1.programCounter] >> 4);
             myInstructions.IncreaseProgramCount();
             switch (instructionType)
             {
@@ -56,7 +56,7 @@ namespace Fancy_Chip_8.Core
                     }
                     break;
                 case 0x1:
-                    myInstructions.JumpToAddress(address);
+                    myInstructions.JumpToAddressDirectly(address);
                     break;
                 case 0x2:
                     myInstructions.CallSubroutine(address);
@@ -92,24 +92,33 @@ namespace Fancy_Chip_8.Core
                             myInstructions.XorXAndY(x, y);
                             break;
                         case 0x4:
-
+                            myInstructions.AddXAndY(x, y);
                             break;
                         case 0x5:
-
+                            myInstructions.SubYFromX(x, y);
                             break;
                         case 0x6:
-
+                            myInstructions.ShiftXRight(x);
                             break;
                         case 0x7:
-
+                            myInstructions.SubXFromY(x, y);
                             break;
                         case 0xE:
-
+                            myInstructions.ShiftXLeft(x);
                             break;
                     }
                     break;
                 case 0x9:
-
+                    myInstructions.SkipNextInstruction(x, y);
+                    break;
+                case 0xA:
+                    myInstructions.SetIndex(address);
+                    break;
+                case 0xB:
+                    myInstructions.JumpToAdress(address);
+                    break;
+                case 0xC:
+                    myInstructions.SetXToRandomNumber(x, lowerByte);
                     break;
             }
         }
@@ -132,12 +141,17 @@ namespace Fancy_Chip_8.Core
             }
         }
 
-
-
         public void LoadProgram(byte[] program)
         {
             //TODO check if file is legit
-            myInstructions.WriteToMemory(program);
+            if (program.Length <= myInstructions.Cpu1.memory.Length - myInstructions.Cpu1.programStart)
+            {
+                myInstructions.WriteToMemory(program);
+            }
+            else
+            {
+                //TODO notify user
+            }
         }
     }
 }

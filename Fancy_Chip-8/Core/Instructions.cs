@@ -8,6 +8,7 @@ namespace Fancy_Chip_8.Core
 {
     public class Instructions
     {
+        Random random = new Random();
         private Cpu _Cpu1 = new Cpu();
 
         public Cpu Cpu1
@@ -48,7 +49,7 @@ namespace Fancy_Chip_8.Core
             Cpu1.programCounter = Cpu1.stack.Pop();
         }
 
-        public void JumpToAddress(ushort addr)
+        public void JumpToAddressDirectly(ushort addr)
         {
             Cpu1.programCounter = addr;
         }
@@ -125,6 +126,68 @@ namespace Fancy_Chip_8.Core
                 Cpu1.registerV[0xF] = 0x00;
                 Cpu1.registerV[x] = Convert.ToByte(sum);
             }
+        }
+
+        public void SubYFromX(byte x, byte y)
+        {
+            if (Cpu1.registerV[x] > Cpu1.registerV[y])
+            {
+                Cpu1.registerV[0xF] = 0x01;
+            }
+            else
+            {
+                Cpu1.registerV[0xF] = 0x00;
+            }
+            Cpu1.registerV[x] -= Cpu1.registerV[y];
+        }
+
+        public void ShiftXRight(byte x)
+        {
+            Cpu1.registerV[0xF] = (byte)(Cpu1.registerV[x] & 0x01);
+            Cpu1.registerV[x] = (byte)(Cpu1.registerV[x] >> 1);
+        }
+
+
+        public void SubXFromY(byte x, byte y)
+        {
+            if (Cpu1.registerV[y] > Cpu1.registerV[x])
+            {
+                Cpu1.registerV[0xF] = 0x01;
+            }
+            else
+            {
+                Cpu1.registerV[0xF] = 0x00;
+            }
+            Cpu1.registerV[x] = (byte)(Cpu1.registerV[y] - Cpu1.registerV[x]);
+        }
+
+        public void ShiftXLeft(byte x)
+        {
+            Cpu1.registerV[0xF] = (byte)(Cpu1.registerV[x] & 0x80 >> 7);
+            Cpu1.registerV[x] = (byte)(Cpu1.registerV[x] << 1);
+        }
+
+        public void SkipNextInstruction(byte x, byte y)
+        {
+            if (Cpu1.registerV[x] != Cpu1.registerV[y])
+            {
+                IncreaseProgramCount();
+            }
+        }
+
+        public void SetIndex(ushort address)
+        {
+            Cpu1.index = address;
+        }
+
+        public void JumpToAdress(ushort address)
+        {
+            Cpu1.programCounter = (byte)(address + Cpu1.registerV[0]);
+        }
+
+        public void SetXToRandomNumber(byte x, byte kk)
+        {
+            Cpu1.registerV[x] = (byte)(kk & random.Next(0x00, 0x100));
         }
     }
 }

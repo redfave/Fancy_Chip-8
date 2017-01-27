@@ -67,8 +67,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Core\Cpu.cs" />
-    <Compile Include="Core\Instructions.cs" />
+    <Compile Include="Core\SystemData.cs" />
+    <Compile Include="Core\SystemInstructions.cs" />
     <Compile Include="Core\Manager.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

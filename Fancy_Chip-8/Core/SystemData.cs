@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Fancy_Chip_8.Core
 {
-    public sealed class Cpu
+    public partial class System
     {
 
-        public Cpu()
+        public System()
         {
             Reset();
         }

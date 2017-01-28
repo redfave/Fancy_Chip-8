@@ -1,30 +1,33 @@
 ﻿<Window x:Class="Fancy_Chip_8.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:core="clr-namespace:Fancy_Chip_8.Core"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Fancy_Chip_8"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Window.CommandBindings>
-        <CommandBinding Command="ApplicationCommands.Close" CanExecute="CommandClose_CanExecute"
-                        Executed="CommandClose_Executed"/>
-        <CommandBinding Command="ApplicationCommands.Open" CanExecute="CommandOpen_CanExecute"
-                        Executed="CommandOpen_Executed"/>
-    </Window.CommandBindings>
+        Title="MainWindow"
+        Width="525"
+        Height="350"
+        mc:Ignorable="d">
+    <Window.DataContext>
+        <core:Manager />
+    </Window.DataContext>
     <Window.InputBindings>
-        <KeyBinding Command="ApplicationCommands.Close" Key="Esc"/>
+        <KeyBinding Key="Esc" Command="{Binding Path=CommandClose}" />
     </Window.InputBindings>
     <Grid>
         <DockPanel>
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="File">
-                    <MenuItem Header="Open" Command="ApplicationCommands.Open"></MenuItem>
-                    <MenuItem Header="Exit" Command="ApplicationCommands.Close" InputGestureText="Esc">
-                    </MenuItem>
+                    <MenuItem Command="{Binding Path=CommandOpen}" Header="Open" />
+                    <MenuItem Command="{Binding Path=CommandClose}" Header="Exit" />
                 </MenuItem>
-                <MenuItem Header="About"></MenuItem>
+                <MenuItem Header="About" />
             </Menu>
+            <Grid DockPanel.Dock="Bottom">
+                <StackPanel>
+                    <CheckBox Content="Run" IsChecked="{Binding Path=SystemIsRunning, Mode=TwoWay}" />
+                </StackPanel>
+            </Grid>
         </DockPanel>
     </Grid>
 </Window>

@@ -12,9 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Fancy_Chip_8.Core;
-using Microsoft.Win32;
-using System.IO;
 
 namespace Fancy_Chip_8
 {
@@ -23,35 +20,9 @@ namespace Fancy_Chip_8
     /// </summary>
     public partial class MainWindow : Window
     {
-        Manager manager = new Manager();
         public MainWindow()
         {
             InitializeComponent();
-        }
-
-        private void CommandClose_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = true;
-        }
-
-        private void CommandClose_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            Application.Current.Shutdown();
-        }
-
-        private void CommandOpen_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = true;
-        }
-
-        private void CommandOpen_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            if (openFileDialog.ShowDialog() == true)
-            {
-                manager.LoadProgram(File.ReadAllBytes(openFileDialog.FileName));
-            }
-            manager.Run();
         }
     }
 }

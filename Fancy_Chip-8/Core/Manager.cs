@@ -1,15 +1,44 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using Prism.Commands;
+using Prism.Mvvm;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Fancy_Chip_8.Core
 {
-    public sealed class Manager
+    public class Manager : BindableBase
     {
-        private bool _SystemIsRunning;
+
+        public Manager()
+        {
+            _CommandOpen = new DelegateCommand(CommandOpen_Executed, CommandOpen_CanExecute);
+            _CommandClose = new DelegateCommand(CommandClose_Executed, CommandClose_CanExecute);
+        }
+
+        DelegateCommand _CommandOpen, _CommandClose;
         private System system1 = new System();
+        private bool _SystemIsRunning;
+
+        public DelegateCommand CommandOpen
+        {
+            get
+            {
+                return _CommandOpen;
+            }
+        }
+
+        public DelegateCommand CommandClose
+        {
+            get
+            {
+                return _CommandClose;
+            }
+        }
 
         public bool SystemIsRunning
         {
@@ -18,11 +47,39 @@ namespace Fancy_Chip_8.Core
                 return _SystemIsRunning;
             }
 
-            private set
+            set
             {
-                _SystemIsRunning = value;
+                SetProperty(ref _SystemIsRunning, value);
+                Run();
             }
         }
+
+
+        private bool CommandOpen_CanExecute()
+        {
+            return !SystemIsRunning;
+        }
+
+        private void CommandOpen_Executed()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            if (openFileDialog.ShowDialog() == true)
+            {
+                LoadProgram(File.ReadAllBytes(openFileDialog.FileName));
+            }
+            SystemIsRunning = true;
+        }
+
+        private bool CommandClose_CanExecute()
+        {
+            return true;
+        }
+
+        private void CommandClose_Executed()
+        {
+            Application.Current.Shutdown();
+        }
+
 
 
         private void Interpret()
@@ -120,6 +177,12 @@ namespace Fancy_Chip_8.Core
                 case 0xC:
                     system1.SetXToRandomNumber(x, lowerByte);
                     break;
+                case 0xD:
+
+                    break;
+                case 0xE:
+
+                    break;
             }
         }
 
@@ -134,7 +197,7 @@ namespace Fancy_Chip_8.Core
 
         public void Run()
         {
-            SystemIsRunning = true;
+
             while (SystemIsRunning)
             {
                 ExecuteCycle();

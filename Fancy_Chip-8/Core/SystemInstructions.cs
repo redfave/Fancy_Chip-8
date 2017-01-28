@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLog;
 
 namespace Fancy_Chip_8.Core
 {
@@ -23,6 +24,7 @@ namespace Fancy_Chip_8.Core
 
         public void WriteToMemory(byte[] program)
         {
+            logger.Debug("");
             Array.Copy(program, 0, memory, programCounter, program.Length);
         }
 

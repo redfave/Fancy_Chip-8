@@ -21,7 +21,7 @@ namespace Fancy_Chip_8.Core
         }
 
         DelegateCommand _CommandOpen, _CommandClose;
-        private System system1 = new System();
+        private System _system1 = new System();
         private bool _SystemIsRunning;
 
         public DelegateCommand CommandOpen
@@ -92,90 +92,90 @@ namespace Fancy_Chip_8.Core
               kk or byte - An 8-bit value, the lowest 8 bits of the instruction
               http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#3.0 
              **/
-            ushort address = (ushort)(system1.memory[system1.programCounter] << 8 & 0x0FFF
-                | system1.memory[system1.programCounter + 1]);
-            byte lowerByte = system1.memory[system1.programCounter + 1];
-            byte n = (byte)(system1.memory[system1.programCounter + 1] & 0x0F);
+            ushort address = (ushort)(_system1.memory[_system1.programCounter] << 8 & 0x0FFF
+                | _system1.memory[_system1.programCounter + 1]);
+            byte lowerByte = _system1.memory[_system1.programCounter + 1];
+            byte n = (byte)(_system1.memory[_system1.programCounter + 1] & 0x0F);
             byte y = (byte)(lowerByte >> 4);
-            byte x = (byte)(system1.memory[system1.programCounter] & 0x0F);
-            byte instructionType = (byte)(system1.memory[system1.programCounter] >> 4);
-            system1.IncreaseProgramCount();
+            byte x = (byte)(_system1.memory[_system1.programCounter] & 0x0F);
+            byte instructionType = (byte)(_system1.memory[_system1.programCounter] >> 4);
+            _system1.IncreaseProgramCount();
             switch (instructionType)
             {
                 case 0x0:
                     if (lowerByte == 0xE0)
                     {
-                        system1.ClearDisplay();
+                        _system1.ClearDisplay();
                     }
                     else if (lowerByte == 0xEE)
                     {
-                        system1.ReturnFromSubroutine();
+                        _system1.ReturnFromSubroutine();
                     }
                     break;
                 case 0x1:
-                    system1.JumpToAddressDirectly(address);
+                    _system1.JumpToAddressDirectly(address);
                     break;
                 case 0x2:
-                    system1.CallSubroutine(address);
+                    _system1.CallSubroutine(address);
                     break;
                 case 0x3:
-                    system1.SkipIfXIsEqual(x, lowerByte);
+                    _system1.SkipIfXIsEqual(x, lowerByte);
                     break;
                 case 0x4:
-                    system1.SkipIfXIsNotEqual(x, lowerByte);
+                    _system1.SkipIfXIsNotEqual(x, lowerByte);
                     break;
                 case 0x5:
-                    system1.SkipIfXIsEqualY(x, y);
+                    _system1.SkipIfXIsEqualY(x, y);
                     break;
                 case 0x6:
-                    system1.SetX(x, lowerByte);
+                    _system1.SetX(x, lowerByte);
                     break;
                 case 0x7:
-                    system1.AddX(x, lowerByte);
+                    _system1.AddX(x, lowerByte);
                     break;
                 case 0x8:
                     switch (n)
                     {
                         case 0x0:
-                            system1.SetXToY(x, y);
+                            _system1.SetXToY(x, y);
                             break;
                         case 0x1:
-                            system1.OrXAndY(x, y);
+                            _system1.OrXAndY(x, y);
                             break;
                         case 0x2:
-                            system1.AndXAndY(x, y);
+                            _system1.AndXAndY(x, y);
                             break;
                         case 0x3:
-                            system1.XorXAndY(x, y);
+                            _system1.XorXAndY(x, y);
                             break;
                         case 0x4:
-                            system1.AddXAndY(x, y);
+                            _system1.AddXAndY(x, y);
                             break;
                         case 0x5:
-                            system1.SubYFromX(x, y);
+                            _system1.SubYFromX(x, y);
                             break;
                         case 0x6:
-                            system1.ShiftXRight(x);
+                            _system1.ShiftXRight(x);
                             break;
                         case 0x7:
-                            system1.SubXFromY(x, y);
+                            _system1.SubXFromY(x, y);
                             break;
                         case 0xE:
-                            system1.ShiftXLeft(x);
+                            _system1.ShiftXLeft(x);
                             break;
                     }
                     break;
                 case 0x9:
-                    system1.SkipNextInstruction(x, y);
+                    _system1.SkipNextInstruction(x, y);
                     break;
                 case 0xA:
-                    system1.SetIndex(address);
+                    _system1.SetIndex(address);
                     break;
                 case 0xB:
-                    system1.JumpToAdress(address);
+                    _system1.JumpToAdress(address);
                     break;
                 case 0xC:
-                    system1.SetXToRandomNumber(x, lowerByte);
+                    _system1.SetXToRandomNumber(x, lowerByte);
                     break;
                 case 0xD:
 
@@ -207,9 +207,9 @@ namespace Fancy_Chip_8.Core
         public void LoadProgram(byte[] program)
         {
             //TODO check if file is legit
-            if (program.Length <= system1.memory.Length - system1.programStart)
+            if (program.Length <= _system1.memory.Length - _system1.programStart)
             {
-                system1.WriteToMemory(program);
+                _system1.WriteToMemory(program);
             }
             else
             {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,10 @@ namespace Fancy_Chip_8.Core
 
         public System()
         {
+            logger = LogManager.GetCurrentClassLogger();
             Reset();
         }
-
+        private static Logger logger;
         public byte[] memory;
         public byte[] registerV;
         public ushort index;

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -13,16 +14,17 @@ namespace Fancy_Chip_8.Core
 {
     public class Manager : BindableBase
     {
-
         public Manager()
         {
+            emulationThread = new Thread(ExecuteCycle);
             _CommandOpen = new DelegateCommand(CommandOpen_Executed, CommandOpen_CanExecute);
             _CommandClose = new DelegateCommand(CommandClose_Executed, CommandClose_CanExecute);
         }
 
+        Thread emulationThread;
         DelegateCommand _CommandOpen, _CommandClose;
         private System _system1 = new System();
-        private bool _SystemIsRunning;
+        private bool _SystemIsRunning, _ProgramIsLoaded;
 
         public DelegateCommand CommandOpen
         {
@@ -50,10 +52,37 @@ namespace Fancy_Chip_8.Core
             set
             {
                 SetProperty(ref _SystemIsRunning, value);
-                Run();
+                if (value)
+                {
+                    if (emulationThread.ThreadState == ThreadState.Suspended)
+                    {
+                        emulationThread.Resume();
+                    }
+                    else
+                    {
+                        emulationThread.Start();
+                    }
+                }
+                else
+                {
+                    emulationThread.Suspend();
+                }
             }
         }
 
+        public bool ProgramIsLoaded
+        {
+            get
+            {
+                return _ProgramIsLoaded;
+            }
+
+            set
+            {
+                SetProperty(ref _ProgramIsLoaded, value);
+                _ProgramIsLoaded = value;
+            }
+        }
 
         private bool CommandOpen_CanExecute()
         {
@@ -67,7 +96,6 @@ namespace Fancy_Chip_8.Core
             {
                 LoadProgram(File.ReadAllBytes(openFileDialog.FileName));
             }
-            SystemIsRunning = true;
         }
 
         private bool CommandClose_CanExecute()
@@ -191,25 +219,20 @@ namespace Fancy_Chip_8.Core
         private void ExecuteCycle()
         {
             //TODO timing stuff?
-            Interpret();
-        }
-
-
-        public void Run()
-        {
-
-            while (SystemIsRunning)
+            while (true)
             {
-                ExecuteCycle();
+                Interpret();
             }
         }
 
         public void LoadProgram(byte[] program)
         {
+            _system1.Reset();
             //TODO check if file is legit
             if (program.Length <= _system1.memory.Length - _system1.programStart)
             {
                 _system1.WriteToMemory(program);
+                ProgramIsLoaded = true;
             }
             else
             {

@@ -25,7 +25,8 @@
             </Menu>
             <Grid DockPanel.Dock="Bottom">
                 <StackPanel>
-                    <CheckBox Content="Run" IsChecked="{Binding Path=SystemIsRunning, Mode=TwoWay}" />
+                    <CheckBox Content="Run" IsChecked="{Binding Path=SystemIsRunning}"
+                              IsEnabled="{Binding Path=ProgramIsLoaded}"/>
                 </StackPanel>
             </Grid>
         </DockPanel>

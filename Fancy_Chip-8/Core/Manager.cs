@@ -257,9 +257,26 @@ namespace Fancy_Chip_8.Core
                     }
                 }
             }
-            bitmap = new Bitmap(bitmap, new System.Drawing.Size(_system1.sceenWidth * screenScaleFactor, _system1.sceenHeight * screenScaleFactor));
+            // bitmap = new Bitmap(bitmap, new System.Drawing.Size(_system1.sceenWidth * screenScaleFactor, _system1.sceenHeight * screenScaleFactor));
+            bitmap = ResizeImage(bitmap, new System.Drawing.Size(_system1.sceenWidth * screenScaleFactor, _system1.sceenHeight * screenScaleFactor));
             outputScreen = bitmap;
         }
+
+
+        //http://stackoverflow.com/a/10839428/5329332
+        private Bitmap ResizeImage(Bitmap imgToResize, System.Drawing.Size size)
+        {
+            Bitmap b = new Bitmap(size.Width, size.Height);
+            using (Graphics g = Graphics.FromImage(b))
+            {
+                g.InterpolationMode = InterpolationMode.NearestNeighbor;
+                g.DrawImage(imgToResize, 0, 0, size.Width, size.Height);
+            }
+            return b;
+
+        }
+
+
 
         private void ExecuteCycle()
         {

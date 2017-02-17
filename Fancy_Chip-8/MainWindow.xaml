@@ -1,7 +1,10 @@
 ﻿<Window x:Class="Fancy_Chip_8.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:drawing="clr-namespace:System.Drawing;assembly=System.Drawing"
         xmlns:core="clr-namespace:Fancy_Chip_8.Core"
+        xmlns:converter="clr-namespace:Fancy_Chip_8.Helper.Converter"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         Title="MainWindow"
@@ -11,24 +14,35 @@
     <Window.DataContext>
         <core:Manager />
     </Window.DataContext>
+    <Window.Resources>
+        <converter:BitmapToBitmapSourceConverter x:Key="myBitmapToBitmapSourceConverter"></converter:BitmapToBitmapSourceConverter>
+    </Window.Resources>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding Path=commandClose}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Window.InputBindings>
-        <KeyBinding Key="Esc" Command="{Binding Path=CommandClose}" />
+        <KeyBinding Key="Esc" Command="{Binding Path=commandClose}" />
     </Window.InputBindings>
     <Grid>
         <DockPanel>
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="File">
-                    <MenuItem Command="{Binding Path=CommandOpen}" Header="Open" />
-                    <MenuItem Command="{Binding Path=CommandClose}" Header="Exit" />
+                    <MenuItem Command="{Binding Path=commandOpen}" Header="Open" />
+                    <MenuItem Command="{Binding Path=commandClose}" Header="Exit" />
                 </MenuItem>
                 <MenuItem Header="About" />
             </Menu>
             <Grid DockPanel.Dock="Bottom">
                 <StackPanel>
-                    <CheckBox Content="Run" IsChecked="{Binding Path=SystemIsRunning}"
-                              IsEnabled="{Binding Path=ProgramIsLoaded}"/>
+                    <CheckBox Content="Run" IsChecked="{Binding Path=systemIsRunning}"
+                              IsEnabled="{Binding Path=programIsLoaded}"/>
                 </StackPanel>
+                
             </Grid>
+            <Image DockPanel.Dock="Right" Source="{Binding Path=outputScreen, Mode=OneWay,
+               UpdateSourceTrigger=PropertyChanged, Converter={StaticResource myBitmapToBitmapSourceConverter}}"/>
         </DockPanel>
     </Grid>
 </Window>

@@ -9,6 +9,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Windows.Media.Imaging;
+using System.Drawing.Drawing2D;
 
 namespace Fancy_Chip_8.Core
 {
@@ -16,77 +20,96 @@ namespace Fancy_Chip_8.Core
     {
         public Manager()
         {
-            emulationThread = new Thread(ExecuteCycle);
-            _CommandOpen = new DelegateCommand(CommandOpen_Executed, CommandOpen_CanExecute);
-            _CommandClose = new DelegateCommand(CommandClose_Executed, CommandClose_CanExecute);
+            _outputScreen = new Bitmap(_system1.sceenWidth * screenScaleFactor, _system1.sceenHeight * screenScaleFactor);
+            _emulationThread = new Thread(ExecuteCycle);
+            _commandOpen = new DelegateCommand(CommandOpen_Executed, CommandOpen_CanExecute);
+            _commandClose = new DelegateCommand(CommandClose_Executed, CommandClose_CanExecute);
         }
 
-        Thread emulationThread;
-        DelegateCommand _CommandOpen, _CommandClose;
-        private System _system1 = new System();
-        private bool _SystemIsRunning, _ProgramIsLoaded;
+        private int screenScaleFactor = 16;
+        private Bitmap _outputScreen;
+        private Thread _emulationThread;
+        private DelegateCommand _commandOpen, _commandClose;
+        private Chip8System _system1 = new Chip8System();
+        private bool _systemIsRunning, _programIsLoaded;
 
-        public DelegateCommand CommandOpen
+        public DelegateCommand commandOpen
         {
             get
             {
-                return _CommandOpen;
+                return _commandOpen;
             }
         }
 
-        public DelegateCommand CommandClose
+        public DelegateCommand commandClose
         {
             get
             {
-                return _CommandClose;
+                return _commandClose;
             }
         }
 
-        public bool SystemIsRunning
+        public bool systemIsRunning
         {
             get
             {
-                return _SystemIsRunning;
+                return _systemIsRunning;
             }
 
             set
             {
-                SetProperty(ref _SystemIsRunning, value);
                 if (value)
                 {
-                    if (emulationThread.ThreadState == ThreadState.Suspended)
+                    if (_emulationThread.ThreadState == ThreadState.Suspended)
                     {
-                        emulationThread.Resume();
+                        _emulationThread.Resume();
                     }
                     else
                     {
-                        emulationThread.Start();
+                        _emulationThread.Start();
                     }
                 }
                 else
                 {
-                    emulationThread.Suspend();
+                    _emulationThread.Suspend();
                 }
+                _systemIsRunning = value;
+                OnPropertyChanged();
             }
         }
 
-        public bool ProgramIsLoaded
+        public bool programIsLoaded
         {
             get
             {
-                return _ProgramIsLoaded;
+                return _programIsLoaded;
             }
 
             set
             {
-                SetProperty(ref _ProgramIsLoaded, value);
-                _ProgramIsLoaded = value;
+                _programIsLoaded = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Bitmap outputScreen
+        {
+            get
+            {
+                return _outputScreen;
+            }
+
+            private set
+            {
+                _outputScreen = value;
+                OnPropertyChanged();
+
             }
         }
 
         private bool CommandOpen_CanExecute()
         {
-            return !SystemIsRunning;
+            return !systemIsRunning;
         }
 
         private void CommandOpen_Executed()
@@ -105,6 +128,7 @@ namespace Fancy_Chip_8.Core
 
         private void CommandClose_Executed()
         {
+            _emulationThread.Abort();
             Application.Current.Shutdown();
         }
 
@@ -134,6 +158,7 @@ namespace Fancy_Chip_8.Core
                     if (lowerByte == 0xE0)
                     {
                         _system1.ClearDisplay();
+                        DrawBitMap();
                     }
                     else if (lowerByte == 0xEE)
                     {
@@ -201,24 +226,44 @@ namespace Fancy_Chip_8.Core
                     break;
                 case 0xB:
                     _system1.JumpToAdress(address);
+
                     break;
                 case 0xC:
                     _system1.SetXToRandomNumber(x, lowerByte);
                     break;
                 case 0xD:
-
+                    _system1.DisplaySprite(x, y, n);
+                    DrawBitMap();
                     break;
                 case 0xE:
-
                     break;
             }
         }
 
-
+        private void DrawBitMap()
+        {
+            Bitmap bitmap = new Bitmap(_system1.sceenWidth, _system1.sceenHeight);
+            for (int i = 0; i < _system1.sceenWidth; i++)
+            {
+                for (int j = 0; j < _system1.sceenHeight; j++)
+                {
+                    if (_system1.screen[i, j])
+                    {
+                        bitmap.SetPixel(i, j, Color.White);
+                    }
+                    else
+                    {
+                        bitmap.SetPixel(i, j, Color.Black);
+                    }
+                }
+            }
+            bitmap = new Bitmap(bitmap, new System.Drawing.Size(_system1.sceenWidth * screenScaleFactor, _system1.sceenHeight * screenScaleFactor));
+            outputScreen = bitmap;
+        }
 
         private void ExecuteCycle()
         {
-            //TODO timing stuff?
+            //TODO timing control
             while (true)
             {
                 Interpret();
@@ -232,7 +277,7 @@ namespace Fancy_Chip_8.Core
             if (program.Length <= _system1.memory.Length - _system1.programStart)
             {
                 _system1.WriteToMemory(program);
-                ProgramIsLoaded = true;
+                programIsLoaded = true;
             }
             else
             {

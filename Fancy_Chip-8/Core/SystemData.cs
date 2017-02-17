@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace Fancy_Chip_8.Core
 {
-    public partial class System
+    public partial class Chip8System
     {
 
-        public System()
+        public Chip8System()
         {
             logger = LogManager.GetCurrentClassLogger();
             Reset();
@@ -24,9 +24,9 @@ namespace Fancy_Chip_8.Core
         public ushort programStart = 512;
         public byte delayTimer;
         public byte soundTimer;
-        public ushort SceenWidth = 64;
-        public ushort SceenHeight = 32;
-        public bool[] screen;
+        public ushort sceenWidth = 64;
+        public ushort sceenHeight = 32;
+        public bool[,] screen;
         public Stack<ushort> stack;
 
 
@@ -38,7 +38,7 @@ namespace Fancy_Chip_8.Core
             programCounter = programStart;
             delayTimer = 0;
             soundTimer = 0;
-            screen = new bool[SceenWidth * SceenHeight];
+            screen = new bool[sceenWidth, sceenHeight];
             stack = new Stack<ushort>(16);
             //Fill memory with sprites of HEX-chars
             byte[] hexSprites = { 0xF0, 0x90, 0x90, 0x90, 0xF0,  //0

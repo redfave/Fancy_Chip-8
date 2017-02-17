@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NLog;
+using System.Collections;
 
 namespace Fancy_Chip_8.Core
 {
-    public partial class System
+    public partial class Chip8System
     {
         public void IncreaseProgramCount()
         {
@@ -30,8 +31,13 @@ namespace Fancy_Chip_8.Core
 
         public void ClearDisplay()
         {
-            for (int i = 0; i < screen.Length; i++)
-            { screen[i] = false; }
+            for (int i = 0; i < sceenWidth; i++)
+            {
+                for (int j = 0; j < sceenHeight; j++)
+                {
+                    screen[i, j] = false;
+                }
+            }
         }
 
         public void ReturnFromSubroutine()
@@ -178,6 +184,26 @@ namespace Fancy_Chip_8.Core
         public void SetXToRandomNumber(byte x, byte kk)
         {
             registerV[x] = (byte)(kk & new Random().Next(0x00, 0x100));
+        }
+
+        public void DisplaySprite(byte x, byte y, byte n)
+        {
+            registerV[0x0F] = Convert.ToByte(false);
+                        byte[] sprite = new byte[n];
+            Array.Copy(memory, programCounter, sprite, 0, Convert.ToInt32(n));
+            for (int i = 0; i < sprite.Length; i++)
+            {
+                BitArray spriteRow = new BitArray(new byte[] { sprite[i] });
+                for (int j = 0; j < 8; j++)
+                {
+                    bool oldPixelValue = screen[x, y + j];
+                    screen[x, y + j] = spriteRow.Get(j);
+                    if (oldPixelValue != screen[x, y + j])
+                    {
+                        registerV[0x0F] = Convert.ToByte(true);
+                    }
+                }
+            }
         }
     }
 }

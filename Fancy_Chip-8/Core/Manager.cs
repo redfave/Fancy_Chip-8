@@ -20,7 +20,7 @@ namespace Fancy_Chip_8.Core
     {
         public Manager()
         {
-            _outputScreen = new Bitmap(_system1.sceenWidth * screenScaleFactor, _system1.sceenHeight * screenScaleFactor);
+            _outputScreen = new Bitmap(_system1.screenWidth * screenScaleFactor, _system1.screenHeight * screenScaleFactor);
             _emulationThread = new Thread(ExecuteCycle);
             _commandOpen = new DelegateCommand(CommandOpen_Executed, CommandOpen_CanExecute);
             _commandClose = new DelegateCommand(CommandClose_Executed, CommandClose_CanExecute);
@@ -249,16 +249,46 @@ namespace Fancy_Chip_8.Core
                     DrawBitMap();
                     break;
                 case 0xE:
+                    //TODO
+                    break;
+                case 0xF:
+                    switch (lowerByte)
+                    {
+                        case 0x07:
+                            //TODO
+                            break;
+                        case 0x0A:
+                            //TODO
+                            break;
+                        case 0x15:
+                            //TODO
+                            break;
+                        case 0x1E:
+                            //TODO
+                            break;
+                        case 0x29:
+                            //TODO
+                            break;
+                        case 0x33:
+                            //TODO
+                            break;
+                        case 0x55:
+                            //TODO
+                            break;
+                        case 0x65:
+                            //TODO
+                            break;
+                    }
                     break;
             }
         }
 
         private void DrawBitMap()
         {
-            Bitmap bitmap = new Bitmap(_system1.sceenWidth, _system1.sceenHeight);
-            for (int i = 0; i < _system1.sceenWidth; i++)
+            Bitmap bitmap = new Bitmap(_system1.screenWidth, _system1.screenHeight);
+            for (int i = 0; i < _system1.screenWidth; i++)
             {
-                for (int j = 0; j < _system1.sceenHeight; j++)
+                for (int j = 0; j < _system1.screenHeight; j++)
                 {
                     if (_system1.screen[i, j])
                     {
@@ -270,7 +300,7 @@ namespace Fancy_Chip_8.Core
                     }
                 }
             }
-            outputScreen = ResizeImage(bitmap, new System.Drawing.Size(_system1.sceenWidth * screenScaleFactor, _system1.sceenHeight * screenScaleFactor));
+            outputScreen = ResizeImage(bitmap, new System.Drawing.Size(_system1.screenWidth * screenScaleFactor, _system1.screenHeight * screenScaleFactor));
         }
 
 

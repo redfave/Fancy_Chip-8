@@ -31,9 +31,9 @@ namespace Fancy_Chip_8.Core
 
         public void ClearDisplay()
         {
-            for (int i = 0; i < sceenWidth; i++)
+            for (int i = 0; i < screenWidth; i++)
             {
-                for (int j = 0; j < sceenHeight; j++)
+                for (int j = 0; j < screenHeight; j++)
                 {
                     screen[i, j] = false;
                 }
@@ -189,21 +189,57 @@ namespace Fancy_Chip_8.Core
         public void DisplaySprite(byte x, byte y, byte n)
         {
             registerV[0x0F] = Convert.ToByte(false);
-                        byte[] sprite = new byte[n];
+            byte[] sprite = new byte[n + 1];
             Array.Copy(memory, programCounter, sprite, 0, Convert.ToInt32(n));
+            //for (int i = 0; i < sprite.Length; i++)
+            //{
+            //    BitArray spriteRow = new BitArray(new byte[] { sprite[i] });
+            //    for (int j = 0; j < 8; j++)
+            //    {
+            //        bool oldPixelValue = screen[x, y + j];
+            //        screen[x, y + j] = spriteRow.Get(j);
+            //        if (oldPixelValue != screen[x, y + j])
+            //        {
+            //            registerV[0x0F] = Convert.ToByte(true);
+            //        }
+            //    }
+            //}
+
             for (int i = 0; i < sprite.Length; i++)
             {
                 BitArray spriteRow = new BitArray(new byte[] { sprite[i] });
                 for (int j = 0; j < 8; j++)
                 {
-                    bool oldPixelValue = screen[x, y + j];
-                    screen[x, y + j] = spriteRow.Get(j);
-                    if (oldPixelValue != screen[x, y + j])
+                    if (x + j + 2 <= screenWidth && y + i + 2 <= screenHeight)
                     {
-                        registerV[0x0F] = Convert.ToByte(true);
+                        SetScreenPixel(spriteRow.Get(j), x, y);
+                    }
+                    else if (x + j + 2 > screenWidth && y + i + 2 > screenHeight)
+                    {
+                        SetScreenPixel(spriteRow.Get(j), Convert.ToByte(j - screenWidth - 1 - x), Convert.ToByte(i - screenHeight - 1 - y));
+                    }
+                    else if (x + j + 2 > screenWidth)
+                    {
+                        SetScreenPixel(spriteRow.Get(j), Convert.ToByte(j - screenWidth - 1 - x), y);
+                    }
+                    else if (y + i + 2 > screenHeight)
+                    {
+                        SetScreenPixel(spriteRow.Get(j), x, Convert.ToByte(i - screenHeight - 1 - y));
                     }
                 }
             }
         }
+
+        private void SetScreenPixel(bool pixelValue, byte screenX, byte screenY)
+        {
+            bool oldPixelValue = screen[screenX, screenY];
+            screen[screenX, screenY] ^= pixelValue;
+            if (oldPixelValue != screen[screenX, screenY])
+            {
+                registerV[0x0F] = Convert.ToByte(true);
+            }
+        }
+
     }
 }
+

@@ -25,8 +25,8 @@ namespace Fancy_Chip_8.Core
         public byte delayTimer;
         public byte soundTimer;
         public byte KeyValue;
-        public ushort sceenWidth = 64;
-        public ushort sceenHeight = 32;
+        public ushort screenWidth = 64;
+        public ushort screenHeight = 32;
         public bool[,] screen;
         public Stack<ushort> stack;
 
@@ -39,7 +39,7 @@ namespace Fancy_Chip_8.Core
             programCounter = programStart;
             delayTimer = 0;
             soundTimer = 0;
-            screen = new bool[sceenWidth, sceenHeight];
+            screen = new bool[screenWidth, screenHeight];
             stack = new Stack<ushort>(16);
             //Fill memory with sprites of HEX-chars
             byte[] hexSprites = { 0xF0, 0x90, 0x90, 0x90, 0xF0,  //0

@@ -191,20 +191,6 @@ namespace Fancy_Chip_8.Core
             registerV[0x0F] = Convert.ToByte(false);
             byte[] sprite = new byte[n + 1];
             Array.Copy(memory, programCounter, sprite, 0, Convert.ToInt32(n));
-            //for (int i = 0; i < sprite.Length; i++)
-            //{
-            //    BitArray spriteRow = new BitArray(new byte[] { sprite[i] });
-            //    for (int j = 0; j < 8; j++)
-            //    {
-            //        bool oldPixelValue = screen[x, y + j];
-            //        screen[x, y + j] = spriteRow.Get(j);
-            //        if (oldPixelValue != screen[x, y + j])
-            //        {
-            //            registerV[0x0F] = Convert.ToByte(true);
-            //        }
-            //    }
-            //}
-
             for (int i = 0; i < sprite.Length; i++)
             {
                 BitArray spriteRow = new BitArray(new byte[] { sprite[i] });
@@ -230,6 +216,38 @@ namespace Fancy_Chip_8.Core
             }
         }
 
+        public void SetXToDelayTime(byte x)
+        {
+            registerV[x] = delayTimer;
+        }
+
+        public void SetDelayTimer(byte x)
+        {
+            delayTimer = registerV[x];
+        }
+
+        public void SetSoundTimer(byte x)
+        {
+            soundTimer = registerV[x];
+        }
+
+        public void AddXToIndex(byte x)
+        {
+            index += registerV[x];
+        }
+
+        public void SetIndexToSpriteAddress(byte x)
+        {
+            index = Convert.ToUInt16(x * 5);
+        }
+
+        public void SetProgramCounterToX(byte x)
+        {
+            memory[programCounter] = Convert.ToByte(GetNthDigit(Convert.ToInt32(registerV[x]), 3, 1));
+            memory[programCounter + 1] = Convert.ToByte(GetNthDigit(Convert.ToInt32(registerV[x]), 2, 1));
+            memory[programCounter + 2] = Convert.ToByte(GetNthDigit(Convert.ToInt32(registerV[x]), 1, 1));
+        }
+
         private void SetScreenPixel(bool pixelValue, byte screenX, byte screenY)
         {
             bool oldPixelValue = screen[screenX, screenY];
@@ -238,6 +256,12 @@ namespace Fancy_Chip_8.Core
             {
                 registerV[0x0F] = Convert.ToByte(true);
             }
+        }
+
+        //http://stackoverflow.com/a/16094891/5329332
+        private int GetNthDigit(int number, int highestDigit, int numDigits)
+        {
+            return (number / Convert.ToInt32(Math.Pow(10, highestDigit - numDigits)) % Convert.ToInt32(Math.Pow(10, numDigits)));
         }
 
     }

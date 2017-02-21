@@ -255,22 +255,25 @@ namespace Fancy_Chip_8.Core
                     switch (lowerByte)
                     {
                         case 0x07:
-                            //TODO
+                            _system1.SetXToDelayTime(x);
                             break;
                         case 0x0A:
                             //TODO
                             break;
                         case 0x15:
-                            //TODO
+                            _system1.SetDelayTimer(x);
+                            break;
+                        case 0x18:
+                            _system1.SetSoundTimer(x);
                             break;
                         case 0x1E:
-                            //TODO
+                            _system1.AddXToIndex(x);
                             break;
                         case 0x29:
-                            //TODO
+                            _system1.SetIndexToSpriteAddress(x);
                             break;
                         case 0x33:
-                            //TODO
+                            _system1.SetProgramCounterToX(x);
                             break;
                         case 0x55:
                             //TODO

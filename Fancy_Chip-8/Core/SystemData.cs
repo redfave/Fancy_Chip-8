@@ -24,6 +24,7 @@ namespace Fancy_Chip_8.Core
         public ushort programStart = 512;
         public byte delayTimer;
         public byte soundTimer;
+        public byte KeyValue;
         public ushort sceenWidth = 64;
         public ushort sceenHeight = 32;
         public bool[,] screen;

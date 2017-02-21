@@ -107,6 +107,19 @@ namespace Fancy_Chip_8.Core
             }
         }
 
+        public byte pressedKey
+        {
+            get
+            {
+                return _system1.KeyValue;
+            }
+            set
+            {
+                _system1.KeyValue = value;
+                OnPropertyChanged();
+            }
+        }
+
         private bool CommandOpen_CanExecute()
         {
             return !systemIsRunning;
@@ -257,9 +270,7 @@ namespace Fancy_Chip_8.Core
                     }
                 }
             }
-            // bitmap = new Bitmap(bitmap, new System.Drawing.Size(_system1.sceenWidth * screenScaleFactor, _system1.sceenHeight * screenScaleFactor));
-            bitmap = ResizeImage(bitmap, new System.Drawing.Size(_system1.sceenWidth * screenScaleFactor, _system1.sceenHeight * screenScaleFactor));
-            outputScreen = bitmap;
+            outputScreen = ResizeImage(bitmap, new System.Drawing.Size(_system1.sceenWidth * screenScaleFactor, _system1.sceenHeight * screenScaleFactor));
         }
 
 

@@ -16,7 +16,8 @@
         <core:Manager />
     </Window.DataContext>
     <Window.Resources>
-        <converter:BitmapToBitmapSourceConverter x:Key="myBitmapToBitmapSourceConverter"></converter:BitmapToBitmapSourceConverter>
+        <converter:BitmapToBitmapSourceConverter x:Key="myBitmapToBitmapSourceConverter"/>
+        <converter:BoolInverterConverter x:Key="myBoolInverterConverter"/>
     </Window.Resources>
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
@@ -33,14 +34,44 @@
                     <MenuItem Command="{Binding Path=commandOpen}" Header="Open" />
                     <MenuItem Command="{Binding Path=commandClose}" Header="Exit" />
                 </MenuItem>
-                <MenuItem Header="About" />
+                <MenuItem Header="About" Command="{Binding Path=commandOpenAboutWindow}"/>
             </Menu>
             <Grid DockPanel.Dock="Bottom">
-                <StackPanel>
-                    <CheckBox Content="Run" IsChecked="{Binding Path=systemIsRunning}"
-                              IsEnabled="{Binding Path=programIsLoaded}"/>
+                <StackPanel Orientation="Horizontal">
+                    <Button Command="{Binding Path=commandRunControl}">
+                        <Image  Width="32" Height="32">
+                            <Image.Style>
+                                <Style TargetType="{x:Type Image}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Path=systemIsRunning}" Value="True">
+                                            <Setter Property="Source" Value="/Ressources/icon_48/icons8-pause-48.png"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Path=systemIsRunning}" Value="False">
+                                            <Setter Property="Source" Value="/Ressources/icon_48/icons8-spielen-48.png"/>
+                                        </DataTrigger>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Opacity" Value="0.5" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                    </Button>
+                    <Button Command="{Binding Path=commandStop}">
+                        <Image Source="/Ressources/icon_48/icons8-stop-48.png" Width="32" Height="32">
+                            <Image.Style>
+                                <Style TargetType="{x:Type Image}">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Opacity" Value="0.5" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                    </Button>
                 </StackPanel>
-                
+
             </Grid>
             <Image DockPanel.Dock="Right" Source="{Binding Path=outputScreen, Mode=OneWay,
                UpdateSourceTrigger=PropertyChanged, Converter={StaticResource myBitmapToBitmapSourceConverter}}"/>

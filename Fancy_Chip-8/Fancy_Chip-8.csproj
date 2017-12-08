@@ -91,6 +91,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="AboutWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="KeyBoardInput.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -99,6 +103,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="AboutWindow.xaml.cs">
+      <DependentUpon>AboutWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -107,6 +114,7 @@
     <Compile Include="Core\SystemInstructions.cs" />
     <Compile Include="Core\Manager.cs" />
     <Compile Include="Helper\Converter\BitmapToBitmapSourceConverter.cs" />
+    <Compile Include="Helper\Converter\BoolInverterConverter.cs" />
     <Compile Include="KeyBoardInput.xaml.cs">
       <DependentUpon>KeyBoardInput.xaml</DependentUpon>
     </Compile>
@@ -129,6 +137,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Resource Include="Ressources\icon_48\icons8-pause-48.png" />
+    <Resource Include="Ressources\icon_48\icons8-spielen-48.png" />
+    <Resource Include="Ressources\icon_48\icons8-stop-48.png" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

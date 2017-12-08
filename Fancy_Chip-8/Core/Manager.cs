@@ -24,12 +24,21 @@ namespace Fancy_Chip_8.Core
             _emulationThread = new Thread(ExecuteCycle);
             _commandOpen = new DelegateCommand(CommandOpen_Executed, CommandOpen_CanExecute);
             _commandClose = new DelegateCommand(CommandClose_Executed, CommandClose_CanExecute);
+            _commandOpenAboutWindow = new DelegateCommand(CommandOpenAboutWindow_Executed);
+            _commandRunControl = new DelegateCommand(CommandRunControl_Executed, CommandRunControl_CanExecute);
+            _commandStop = new DelegateCommand(CommandStop_Executed, CommandStop_CanExecute);
+
+            _commandOpen.ObservesProperty(() => systemIsRunning);
+            _commandRunControl.ObservesProperty(() => programIsLoaded);
+            _commandStop.ObservesProperty(() => systemIsRunning);
+            _commandStop.ObservesProperty(() => programIsLoaded);
+
         }
 
         private int screenScaleFactor = 16;
         private Bitmap _outputScreen;
         private Thread _emulationThread;
-        private DelegateCommand _commandOpen, _commandClose;
+        private DelegateCommand _commandOpen, _commandClose, _commandOpenAboutWindow, _commandRunControl, _commandStop;
         private Chip8System _system1 = new Chip8System();
         private bool _systemIsRunning, _programIsLoaded;
 
@@ -46,6 +55,30 @@ namespace Fancy_Chip_8.Core
             get
             {
                 return _commandClose;
+            }
+        }
+
+        public DelegateCommand commandOpenAboutWindow
+        {
+            get
+            {
+                return _commandOpenAboutWindow;
+            }
+        }
+
+        public DelegateCommand commandRunControl
+        {
+            get
+            {
+                return _commandRunControl;
+            }
+        }
+
+        public DelegateCommand commandStop
+        {
+            get
+            {
+                return _commandStop;
             }
         }
 
@@ -141,8 +174,36 @@ namespace Fancy_Chip_8.Core
 
         private void CommandClose_Executed()
         {
-            _emulationThread.Abort();
+            _emulationThread.Suspend();
             Application.Current.Shutdown();
+        }
+
+        private void CommandOpenAboutWindow_Executed()
+        {
+            new AboutWindow().Show();
+        }
+
+        private bool CommandRunControl_CanExecute()
+        {
+            return programIsLoaded;
+        }
+
+        private void CommandRunControl_Executed()
+        {
+            systemIsRunning = !systemIsRunning;
+        }
+
+        private bool CommandStop_CanExecute()
+        {
+            return programIsLoaded & systemIsRunning;
+        }
+
+        private void CommandStop_Executed()
+        {
+            systemIsRunning = false;
+            programIsLoaded = false;
+            _system1.ClearDisplay();
+            _system1.Reset();
         }
 
 

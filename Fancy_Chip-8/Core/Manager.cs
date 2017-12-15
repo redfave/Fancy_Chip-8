@@ -13,6 +13,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Media.Imaging;
 using System.Drawing.Drawing2D;
+using System.Windows.Threading;
 
 namespace Fancy_Chip_8.Core
 {
@@ -21,7 +22,9 @@ namespace Fancy_Chip_8.Core
         public Manager()
         {
             _outputScreen = new Bitmap(_system1.screenWidth * screenScaleFactor, _system1.screenHeight * screenScaleFactor);
-            _emulationThread = new Thread(ExecuteCycle);
+            //emulate 500Hz clock speed
+            _cpuTimer.Interval = new TimeSpan(0, 0, 0, 0, 2);
+            _cpuTimer.Tick += new EventHandler(cpuTimer_Tick);
             _commandOpen = new DelegateCommand(CommandOpen_Executed, CommandOpen_CanExecute);
             _commandClose = new DelegateCommand(CommandClose_Executed, CommandClose_CanExecute);
             _commandOpenAboutWindow = new DelegateCommand(CommandOpenAboutWindow_Executed);
@@ -37,7 +40,7 @@ namespace Fancy_Chip_8.Core
 
         private int screenScaleFactor = 16;
         private Bitmap _outputScreen;
-        private Thread _emulationThread;
+        private DispatcherTimer _cpuTimer = new DispatcherTimer();
         private DelegateCommand _commandOpen, _commandClose, _commandOpenAboutWindow, _commandRunControl, _commandStop;
         private Chip8System _system1 = new Chip8System();
         private bool _systemIsRunning, _programIsLoaded;
@@ -93,18 +96,11 @@ namespace Fancy_Chip_8.Core
             {
                 if (value)
                 {
-                    if (_emulationThread.ThreadState == ThreadState.Suspended)
-                    {
-                        _emulationThread.Resume();
-                    }
-                    else
-                    {
-                        _emulationThread.Start();
-                    }
+                    _cpuTimer.Start();
                 }
                 else
                 {
-                    _emulationThread.Suspend();
+                    _cpuTimer.Stop();
                 }
                 _systemIsRunning = value;
                 OnPropertyChanged();
@@ -174,7 +170,7 @@ namespace Fancy_Chip_8.Core
 
         private void CommandClose_Executed()
         {
-            _emulationThread.Suspend();
+            _cpuTimer.Stop();
             Application.Current.Shutdown();
         }
 
@@ -381,15 +377,9 @@ namespace Fancy_Chip_8.Core
 
         }
 
-
-
-        private void ExecuteCycle()
+        private void cpuTimer_Tick(object sender, EventArgs e)
         {
-            //TODO timing control
-            while (true)
-            {
-                Interpret();
-            }
+            Interpret();
         }
 
         public void LoadProgram(byte[] program)

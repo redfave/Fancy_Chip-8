@@ -14,6 +14,7 @@ using System.Drawing.Imaging;
 using System.Windows.Media.Imaging;
 using System.Drawing.Drawing2D;
 using System.Windows.Threading;
+using Fancy_Chip_8.Helper;
 
 namespace Fancy_Chip_8.Core
 {
@@ -22,9 +23,16 @@ namespace Fancy_Chip_8.Core
         public Manager()
         {
             _outputScreen = new Bitmap(_system1.screenWidth * screenScaleFactor, _system1.screenHeight * screenScaleFactor);
+            _loopSoundHelper = new LoopSoundHelper();
+            _loopSoundHelper.SetLoopSound(400);
             //emulate 500Hz clock speed
+            _cpuTimer = new DispatcherTimer();
             _cpuTimer.Interval = new TimeSpan(0, 0, 0, 0, 2);
             _cpuTimer.Tick += new EventHandler(cpuTimer_Tick);
+            //emulate nearly 60Hz timer speed
+            _delayAndSoundTimer = new DispatcherTimer();
+            _delayAndSoundTimer.Interval = new TimeSpan(16667000 / 100); //approximation to 16,7ms
+            _delayAndSoundTimer.Tick += new EventHandler(delayAndSoundTimer_Tick);
             _commandOpen = new DelegateCommand(CommandOpen_Executed, CommandOpen_CanExecute);
             _commandClose = new DelegateCommand(CommandClose_Executed, CommandClose_CanExecute);
             _commandOpenAboutWindow = new DelegateCommand(CommandOpenAboutWindow_Executed);
@@ -40,7 +48,8 @@ namespace Fancy_Chip_8.Core
 
         private int screenScaleFactor = 16;
         private Bitmap _outputScreen;
-        private DispatcherTimer _cpuTimer = new DispatcherTimer();
+        private LoopSoundHelper _loopSoundHelper;
+        private DispatcherTimer _cpuTimer, _delayAndSoundTimer;
         private DelegateCommand _commandOpen, _commandClose, _commandOpenAboutWindow, _commandRunControl, _commandStop;
         private Chip8System _system1 = new Chip8System();
         private bool _systemIsRunning, _programIsLoaded;
@@ -97,10 +106,12 @@ namespace Fancy_Chip_8.Core
                 if (value)
                 {
                     _cpuTimer.Start();
+                    _delayAndSoundTimer.Start();
                 }
                 else
                 {
                     _cpuTimer.Stop();
+                    _delayAndSoundTimer.Stop();
                 }
                 _systemIsRunning = value;
                 OnPropertyChanged();
@@ -171,6 +182,7 @@ namespace Fancy_Chip_8.Core
         private void CommandClose_Executed()
         {
             _cpuTimer.Stop();
+            _delayAndSoundTimer.Stop();
             Application.Current.Shutdown();
         }
 
@@ -380,6 +392,23 @@ namespace Fancy_Chip_8.Core
         private void cpuTimer_Tick(object sender, EventArgs e)
         {
             Interpret();
+        }
+
+        private void delayAndSoundTimer_Tick(object sender, EventArgs e)
+        {
+            if (_system1.delayTimer > 0)
+            {
+                _system1.delayTimer--;
+            }
+            if (_system1.soundTimer > 0)
+            {
+                _system1.soundTimer--;
+                _loopSoundHelper.PlayLoopSound();
+            }
+            else
+            {
+                _loopSoundHelper.StopLoopSound();
+            }
         }
 
         public void LoadProgram(byte[] program)

@@ -115,6 +115,7 @@
     <Compile Include="Core\Manager.cs" />
     <Compile Include="Helper\Converter\BitmapToBitmapSourceConverter.cs" />
     <Compile Include="Helper\Converter\BoolInverterConverter.cs" />
+    <Compile Include="Helper\SoundHelper.cs" />
     <Compile Include="KeyBoardInput.xaml.cs">
       <DependentUpon>KeyBoardInput.xaml</DependentUpon>
     </Compile>

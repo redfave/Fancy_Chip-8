@@ -18,7 +18,7 @@ namespace Fancy_Chip_8.Core
             }
             else
             {
-                throw new Exception();
+                throw new InvalidOperationException();
                 //TODO throw error (something went horribly wrong)
             }
         }

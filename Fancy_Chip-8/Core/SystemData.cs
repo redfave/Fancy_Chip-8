@@ -17,31 +17,31 @@ namespace Fancy_Chip_8.Core
             Reset();
         }
         private static Logger logger;
-        public byte[] memory;
-        public byte[] registerV;
-        public ushort index;
-        public ushort programCounter;
-        public ushort programStart = 512;
-        public byte delayTimer;
-        public byte soundTimer;
-        public byte KeyValue;
-        public ushort screenWidth = 64;
-        public ushort screenHeight = 32;
-        public bool[,] screen;
-        public Stack<ushort> stack;
 
+        public byte[] Memory { get; private set; }
+        public byte[] RegisterV { get; private set; }
+        public ushort Index { get; private set; }
+        public ushort ProgramCounter { get; private set; }
+        public ushort ProgramStart { get; } = 512;
+        public byte DelayTimer { get; private set; }
+        public byte SoundTimer { get; private set; }
+        public byte KeyValue { get; set; }
+        public ushort ScreenWidth { get; private set; } = 64;
+        public ushort ScreenHeight { get; private set; } = 32;
+        public bool[,] Screen { get; private set; }
+        public Stack<ushort> Stack { get; private set; }
 
         public void Reset()
         {
-            memory = new byte[4096];
-            registerV = new byte[16];
-            index = 0;
-            programCounter = programStart;
-            delayTimer = 0;
-            soundTimer = 0;
-            screen = new bool[screenWidth, screenHeight];
-            stack = new Stack<ushort>(16);
-            //Fill memory with sprites of HEX-chars
+            Memory = new byte[4096];
+            RegisterV = new byte[16];
+            Index = 0;
+            ProgramCounter = ProgramStart;
+            DelayTimer = 0;
+            SoundTimer = 0;
+            Screen = new bool[ScreenWidth, ScreenHeight];
+            Stack = new Stack<ushort>(16);
+            //Fill _memory with sprites of HEX-chars
             byte[] hexSprites = { 0xF0, 0x90, 0x90, 0x90, 0xF0,  //0
                                 0x20, 0x60, 0x20, 0x20, 0x70,    //1
                                 0xF0, 0x10, 0xF0, 0x80, 0xF0,    //2
@@ -58,7 +58,7 @@ namespace Fancy_Chip_8.Core
                                 0xE0, 0x90, 0x90, 0x90, 0xE0,    //D
                                 0xF0, 0x80, 0xF0, 0x80, 0xF0,    //E
                                 0xF0, 0x80, 0xF0, 0x80, 0x80 };  //F
-            Array.Copy(hexSprites, memory, hexSprites.Length);
+            Array.Copy(hexSprites, Memory, hexSprites.Length);
         }
     }
 }

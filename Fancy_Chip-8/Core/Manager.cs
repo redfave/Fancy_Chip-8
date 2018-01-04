@@ -22,7 +22,7 @@ namespace Fancy_Chip_8.Core
     {
         public Manager()
         {
-            _outputScreen = new Bitmap(_system1.screenWidth * screenScaleFactor, _system1.screenHeight * screenScaleFactor);
+            _outputScreen = new Bitmap(_system1.ScreenWidth * screenScaleFactor, _system1.ScreenHeight * screenScaleFactor);
             _loopSoundHelper = new LoopSoundHelper();
             _loopSoundHelper.SetLoopSound(400);
             //emulate 500Hz clock speed
@@ -228,13 +228,13 @@ namespace Fancy_Chip_8.Core
               kk or byte - An 8-bit value, the lowest 8 bits of the instruction
               http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#3.0 
              **/
-            ushort address = (ushort)(_system1.memory[_system1.programCounter] << 8 & 0x0FFF
-                | _system1.memory[_system1.programCounter + 1]);
-            byte lowerByte = _system1.memory[_system1.programCounter + 1];
-            byte n = (byte)(_system1.memory[_system1.programCounter + 1] & 0x0F);
+            ushort address = (ushort)(_system1.Memory[_system1.ProgramCounter] << 8 & 0x0FFF
+                | _system1.Memory[_system1.ProgramCounter + 1]);
+            byte lowerByte = _system1.Memory[_system1.ProgramCounter + 1];
+            byte n = (byte)(_system1.Memory[_system1.ProgramCounter + 1] & 0x0F);
             byte y = (byte)(lowerByte >> 4);
-            byte x = (byte)(_system1.memory[_system1.programCounter] & 0x0F);
-            byte instructionType = (byte)(_system1.memory[_system1.programCounter] >> 4);
+            byte x = (byte)(_system1.Memory[_system1.ProgramCounter] & 0x0F);
+            byte instructionType = (byte)(_system1.Memory[_system1.ProgramCounter] >> 4);
             _system1.IncreaseProgramCount();
             switch (instructionType)
             {
@@ -357,12 +357,12 @@ namespace Fancy_Chip_8.Core
 
         private void DrawBitMap()
         {
-            Bitmap bitmap = new Bitmap(_system1.screenWidth, _system1.screenHeight);
-            for (int i = 0; i < _system1.screenWidth; i++)
+            Bitmap bitmap = new Bitmap(_system1.ScreenWidth, _system1.ScreenHeight);
+            for (int i = 0; i < _system1.ScreenWidth; i++)
             {
-                for (int j = 0; j < _system1.screenHeight; j++)
+                for (int j = 0; j < _system1.ScreenHeight; j++)
                 {
-                    if (_system1.screen[i, j])
+                    if (_system1.Screen[i, j])
                     {
                         bitmap.SetPixel(i, j, Color.White);
                     }
@@ -372,7 +372,7 @@ namespace Fancy_Chip_8.Core
                     }
                 }
             }
-            outputScreen = ResizeImage(bitmap, new System.Drawing.Size(_system1.screenWidth * screenScaleFactor, _system1.screenHeight * screenScaleFactor));
+            outputScreen = ResizeImage(bitmap, new System.Drawing.Size(_system1.ScreenWidth * screenScaleFactor, _system1.ScreenHeight * screenScaleFactor));
         }
 
 
@@ -396,13 +396,13 @@ namespace Fancy_Chip_8.Core
 
         private void OutputTimer_Tick(object sender, EventArgs e)
         {
-            if (_system1.delayTimer > 0)
+            if (_system1.DelayTimer > 0)
             {
-                _system1.delayTimer--;
+                _system1.DelayTimerDecrease();
             }
-            if (_system1.soundTimer > 0)
+            if (_system1.SoundTimer > 0)
             {
-                _system1.soundTimer--;
+                _system1.SoundTimerDecrease();
                 _loopSoundHelper.PlayLoopSound();
             }
             else
@@ -416,7 +416,7 @@ namespace Fancy_Chip_8.Core
         {
             _system1.Reset();
             //TODO check if file is legit
-            if (program.Length <= _system1.memory.Length - _system1.programStart)
+            if (program.Length <= _system1.Memory.Length - _system1.ProgramStart)
             {
                 _system1.WriteToMemory(program);
                 programIsLoaded = true;

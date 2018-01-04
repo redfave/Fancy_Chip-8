@@ -12,9 +12,9 @@ namespace Fancy_Chip_8.Core
     {
         public void IncreaseProgramCount()
         {
-            if (programCounter % 2 == 0)
+            if (ProgramCounter % 2 == 0)
             {
-                programCounter += 2;
+                ProgramCounter += 2;
             }
             else
             {
@@ -26,39 +26,39 @@ namespace Fancy_Chip_8.Core
         public void WriteToMemory(byte[] program)
         {
             logger.Debug("");
-            Array.Copy(program, 0, memory, programCounter, program.Length);
+            Array.Copy(program, 0, Memory, ProgramCounter, program.Length);
         }
 
         public void ClearDisplay()
         {
-            for (int i = 0; i < screenWidth; i++)
+            for (int i = 0; i < ScreenWidth; i++)
             {
-                for (int j = 0; j < screenHeight; j++)
+                for (int j = 0; j < ScreenHeight; j++)
                 {
-                    screen[i, j] = false;
+                    Screen[i, j] = false;
                 }
             }
         }
 
         public void ReturnFromSubroutine()
         {
-            programCounter = stack.Pop();
+            ProgramCounter = Stack.Pop();
         }
 
         public void JumpToAddressDirectly(ushort addr)
         {
-            programCounter = addr;
+            ProgramCounter = addr;
         }
 
         public void CallSubroutine(ushort addr)
         {
-            stack.Push(programCounter);
-            programCounter = addr;
+            Stack.Push(ProgramCounter);
+            ProgramCounter = addr;
         }
 
         public void SkipIfXIsEqual(byte x, byte kk)
         {
-            if (registerV[x] == kk)
+            if (RegisterV[x] == kk)
             {
                 IncreaseProgramCount();
             }
@@ -66,7 +66,7 @@ namespace Fancy_Chip_8.Core
 
         public void SkipIfXIsNotEqual(byte x, byte kk)
         {
-            if (registerV[x] != kk)
+            if (RegisterV[x] != kk)
             {
                 IncreaseProgramCount();
             }
@@ -74,7 +74,7 @@ namespace Fancy_Chip_8.Core
 
         public void SkipIfXIsEqualY(byte x, byte y)
         {
-            if (registerV[x] == registerV[y])
+            if (RegisterV[x] == RegisterV[y])
             {
                 IncreaseProgramCount();
             }
@@ -82,31 +82,31 @@ namespace Fancy_Chip_8.Core
 
         public void SetX(byte x, byte kk)
         {
-            registerV[x] = kk;
+            RegisterV[x] = kk;
         }
 
         public void AddX(byte x, byte kk)
         {
-            registerV[x] += kk;
+            RegisterV[x] += kk;
         }
 
         public void SetXToY(byte x, byte y)
         {
-            registerV[x] = registerV[y];
+            RegisterV[x] = RegisterV[y];
         }
         public void OrXAndY(byte x, byte y)
         {
-            registerV[x] = (byte)(registerV[x] | registerV[y]);
+            RegisterV[x] = (byte)(RegisterV[x] | RegisterV[y]);
         }
 
         public void AndXAndY(byte x, byte y)
         {
-            registerV[x] = (byte)(registerV[x] & registerV[y]);
+            RegisterV[x] = (byte)(RegisterV[x] & RegisterV[y]);
         }
 
         public void XorXAndY(byte x, byte y)
         {
-            registerV[x] = (byte)(registerV[x] ^ registerV[y]);
+            RegisterV[x] = (byte)(RegisterV[x] ^ RegisterV[y]);
         }
 
         public void AddXAndY(byte x, byte y)
@@ -114,58 +114,58 @@ namespace Fancy_Chip_8.Core
             ushort sum = (ushort)(x + y);
             if (sum > 0xFF)
             {
-                registerV[0xF] = 0x01;
-                registerV[x] = Convert.ToByte(sum);
+                RegisterV[0xF] = 0x01;
+                RegisterV[x] = Convert.ToByte(sum);
             }
             else
             {
-                registerV[0xF] = 0x00;
-                registerV[x] = Convert.ToByte(sum);
+                RegisterV[0xF] = 0x00;
+                RegisterV[x] = Convert.ToByte(sum);
             }
         }
 
         public void SubYFromX(byte x, byte y)
         {
-            if (registerV[x] > registerV[y])
+            if (RegisterV[x] > RegisterV[y])
             {
-                registerV[0xF] = 0x01;
+                RegisterV[0xF] = 0x01;
             }
             else
             {
-                registerV[0xF] = 0x00;
+                RegisterV[0xF] = 0x00;
             }
-            registerV[x] -= registerV[y];
+            RegisterV[x] -= RegisterV[y];
         }
 
         public void ShiftXRight(byte x)
         {
-            registerV[0xF] = (byte)(registerV[x] & 0x01);
-            registerV[x] = (byte)(registerV[x] >> 1);
+            RegisterV[0xF] = (byte)(RegisterV[x] & 0x01);
+            RegisterV[x] = (byte)(RegisterV[x] >> 1);
         }
 
 
         public void SubXFromY(byte x, byte y)
         {
-            if (registerV[y] > registerV[x])
+            if (RegisterV[y] > RegisterV[x])
             {
-                registerV[0xF] = 0x01;
+                RegisterV[0xF] = 0x01;
             }
             else
             {
-                registerV[0xF] = 0x00;
+                RegisterV[0xF] = 0x00;
             }
-            registerV[x] = (byte)(registerV[y] - registerV[x]);
+            RegisterV[x] = (byte)(RegisterV[y] - RegisterV[x]);
         }
 
         public void ShiftXLeft(byte x)
         {
-            registerV[0xF] = (byte)(registerV[x] & 0x80 >> 7);
-            registerV[x] = (byte)(registerV[x] << 1);
+            RegisterV[0xF] = (byte)(RegisterV[x] & 0x80 >> 7);
+            RegisterV[x] = (byte)(RegisterV[x] << 1);
         }
 
         public void SkipNextInstruction(byte x, byte y)
         {
-            if (registerV[x] != registerV[y])
+            if (RegisterV[x] != RegisterV[y])
             {
                 IncreaseProgramCount();
             }
@@ -173,44 +173,44 @@ namespace Fancy_Chip_8.Core
 
         public void SetIndex(ushort address)
         {
-            index = address;
+            Index = address;
         }
 
         public void JumpToAdress(ushort address)
         {
-            programCounter = (byte)(address + registerV[0]);
+            ProgramCounter = (byte)(address + RegisterV[0]);
         }
 
         public void SetXToRandomNumber(byte x, byte kk)
         {
-            registerV[x] = (byte)(kk & new Random().Next(0x00, 0x100));
+            RegisterV[x] = (byte)(kk & new Random().Next(0x00, 0x100));
         }
 
         public void DisplaySprite(byte x, byte y, byte n)
         {
-            registerV[0x0F] = Convert.ToByte(false);
+            RegisterV[0x0F] = Convert.ToByte(false);
             byte[] sprite = new byte[n + 1];
-            Array.Copy(memory, programCounter, sprite, 0, Convert.ToInt32(n));
+            Array.Copy(Memory, ProgramCounter, sprite, 0, Convert.ToInt32(n));
             for (int i = 0; i < sprite.Length; i++)
             {
                 BitArray spriteRow = new BitArray(new byte[] { sprite[i] });
                 for (int j = 0; j < 8; j++)
                 {
-                    if (x + j + 2 <= screenWidth && y + i + 2 <= screenHeight)
+                    if (x + j + 2 <= ScreenWidth && y + i + 2 <= ScreenHeight)
                     {
                         SetScreenPixel(spriteRow.Get(j), x, y);
                     }
-                    else if (x + j + 2 > screenWidth && y + i + 2 > screenHeight)
+                    else if (x + j + 2 > ScreenWidth && y + i + 2 > ScreenHeight)
                     {
-                        SetScreenPixel(spriteRow.Get(j), Convert.ToByte(j - screenWidth - 1 - x), Convert.ToByte(i - screenHeight - 1 - y));
+                        SetScreenPixel(spriteRow.Get(j), Convert.ToByte(j - ScreenWidth - 1 - x), Convert.ToByte(i - ScreenHeight - 1 - y));
                     }
-                    else if (x + j + 2 > screenWidth)
+                    else if (x + j + 2 > ScreenWidth)
                     {
-                        SetScreenPixel(spriteRow.Get(j), Convert.ToByte(j - screenWidth - 1 - x), y);
+                        SetScreenPixel(spriteRow.Get(j), Convert.ToByte(j - ScreenWidth - 1 - x), y);
                     }
-                    else if (y + i + 2 > screenHeight)
+                    else if (y + i + 2 > ScreenHeight)
                     {
-                        SetScreenPixel(spriteRow.Get(j), x, Convert.ToByte(i - screenHeight - 1 - y));
+                        SetScreenPixel(spriteRow.Get(j), x, Convert.ToByte(i - ScreenHeight - 1 - y));
                     }
                 }
             }
@@ -218,45 +218,49 @@ namespace Fancy_Chip_8.Core
 
         public void SetXToDelayTime(byte x)
         {
-            registerV[x] = delayTimer;
+            RegisterV[x] = DelayTimer;
         }
 
         public void SetDelayTimer(byte x)
         {
-            delayTimer = registerV[x];
+            DelayTimer = RegisterV[x];
         }
 
         public void SetSoundTimer(byte x)
         {
-            soundTimer = registerV[x];
+            SoundTimer = RegisterV[x];
         }
 
         public void AddXToIndex(byte x)
         {
-            index += registerV[x];
+            Index += RegisterV[x];
         }
 
         public void SetIndexToSpriteAddress(byte x)
         {
-            index = Convert.ToUInt16(x * 5);
+            Index = Convert.ToUInt16(x * 5);
         }
 
         public void SetProgramCounterToX(byte x)
         {
-            memory[programCounter] = Convert.ToByte(GetNthDigit(Convert.ToInt32(registerV[x]), 3, 1));
-            memory[programCounter + 1] = Convert.ToByte(GetNthDigit(Convert.ToInt32(registerV[x]), 2, 1));
-            memory[programCounter + 2] = Convert.ToByte(GetNthDigit(Convert.ToInt32(registerV[x]), 1, 1));
+            Memory[ProgramCounter] = Convert.ToByte(GetNthDigit(Convert.ToInt32(RegisterV[x]), 3, 1));
+            Memory[ProgramCounter + 1] = Convert.ToByte(GetNthDigit(Convert.ToInt32(RegisterV[x]), 2, 1));
+            Memory[ProgramCounter + 2] = Convert.ToByte(GetNthDigit(Convert.ToInt32(RegisterV[x]), 1, 1));
         }
 
         private void SetScreenPixel(bool pixelValue, byte screenX, byte screenY)
         {
-            bool oldPixelValue = screen[screenX, screenY];
-            screen[screenX, screenY] ^= pixelValue;
-            if (oldPixelValue != screen[screenX, screenY])
+            bool oldPixelValue = Screen[screenX, screenY];
+            Screen[screenX, screenY] ^= pixelValue;
+            if (oldPixelValue != Screen[screenX, screenY])
             {
-                registerV[0x0F] = Convert.ToByte(true);
+                RegisterV[0x0F] = Convert.ToByte(true);
             }
         }
+
+        public void DelayTimerDecrease() => DelayTimer--;
+
+        public void SoundTimerDecrease() => SoundTimer--;
 
         //http://stackoverflow.com/a/16094891/5329332
         private int GetNthDigit(int number, int highestDigit, int numDigits)

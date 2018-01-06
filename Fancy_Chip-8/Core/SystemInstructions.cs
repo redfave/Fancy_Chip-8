@@ -187,7 +187,7 @@ namespace Fancy_Chip_8.Core
 
         public void DisplaySprite(byte x, byte y, byte n)
         {
-            if (n > 14)
+            if (n > 15)
             {
                 throw new ArgumentException("The sprite can't be higher than 15 lines", "n");
             }
@@ -199,8 +199,9 @@ namespace Fancy_Chip_8.Core
             {
                 throw new ArgumentException("Can't draw outside the screen", "y");
             }
-            RegisterV[0x0F] = Convert.ToByte(false);
-            byte[] sprite = new byte[n + 1];
+            byte[] sprite = new byte[n //+ 1
+                    ];
+            Array.Copy(Memory, Index, sprite, 0, Convert.ToInt32(n));
             Array.Copy(Memory, ProgramCounter, sprite, 0, Convert.ToInt32(n));
             for (int i = 0; i < sprite.Length; i++)
             {

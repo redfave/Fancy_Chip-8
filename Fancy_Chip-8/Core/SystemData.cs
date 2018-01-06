@@ -26,8 +26,8 @@ namespace Fancy_Chip_8.Core
         public byte DelayTimer { get; private set; }
         public byte SoundTimer { get; private set; }
         public byte KeyValue { get; set; }
-        public ushort ScreenWidth { get; private set; } = 64;
-        public ushort ScreenHeight { get; private set; } = 32;
+        public ushort ScreenWidth { get; } = 64;
+        public ushort ScreenHeight { get; } = 32;
         public bool[,] Screen { get; private set; }
         public Stack<ushort> Stack { get; private set; }
 

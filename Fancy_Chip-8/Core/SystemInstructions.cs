@@ -18,8 +18,7 @@ namespace Fancy_Chip_8.Core
             }
             else
             {
-                throw new InvalidOperationException();
-                //TODO throw error (something went horribly wrong)
+                throw new InvalidOperationException("The program counter points to an odd address");
             }
         }
 
@@ -188,6 +187,18 @@ namespace Fancy_Chip_8.Core
 
         public void DisplaySprite(byte x, byte y, byte n)
         {
+            if (n > 14)
+            {
+                throw new ArgumentException("The sprite can't be higher than 15 lines", "n");
+            }
+            if (0 >= x & x <= ScreenWidth == false)
+            {
+                throw new ArgumentException("Can't draw outside the screen", "x");
+            }
+            if (0 >= y & y <= ScreenHeight == false)
+            {
+                throw new ArgumentException("Can't draw outside the screen", "y");
+            }
             RegisterV[0x0F] = Convert.ToByte(false);
             byte[] sprite = new byte[n + 1];
             Array.Copy(Memory, ProgramCounter, sprite, 0, Convert.ToInt32(n));
@@ -213,6 +224,16 @@ namespace Fancy_Chip_8.Core
                         SetScreenPixel(spriteRow.Get(j), x, Convert.ToByte(i - ScreenHeight - 1 - y));
                     }
                 }
+            }
+        }
+
+        private void SetScreenPixel(bool pixelValue, byte screenX, byte screenY)
+        {
+            bool oldPixelValue = Screen[screenX, screenY];
+            Screen[screenX, screenY] ^= pixelValue;
+            if (oldPixelValue != Screen[screenX, screenY])
+            {
+                RegisterV[0x0F] = Convert.ToByte(true);
             }
         }
 
@@ -248,25 +269,15 @@ namespace Fancy_Chip_8.Core
             Memory[ProgramCounter + 2] = Convert.ToByte(GetNthDigit(Convert.ToInt32(RegisterV[x]), 1, 1));
         }
 
-        private void SetScreenPixel(bool pixelValue, byte screenX, byte screenY)
-        {
-            bool oldPixelValue = Screen[screenX, screenY];
-            Screen[screenX, screenY] ^= pixelValue;
-            if (oldPixelValue != Screen[screenX, screenY])
-            {
-                RegisterV[0x0F] = Convert.ToByte(true);
-            }
-        }
-
-        public void DelayTimerDecrease() => DelayTimer--;
-
-        public void SoundTimerDecrease() => SoundTimer--;
-
         //http://stackoverflow.com/a/16094891/5329332
         private int GetNthDigit(int number, int highestDigit, int numDigits)
         {
             return (number / Convert.ToInt32(Math.Pow(10, highestDigit - numDigits)) % Convert.ToInt32(Math.Pow(10, numDigits)));
         }
+
+        public void DelayTimerDecrease() => DelayTimer--;
+
+        public void SoundTimerDecrease() => SoundTimer--;
 
     }
 }

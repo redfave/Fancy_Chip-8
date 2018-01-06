@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fancy_Chip-8", "Fancy_Chip-8\Fancy_Chip-8.csproj", "{ABFFC949-00B0-45A6-988F-AF9CE9A54BD7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fancy_Chip-8Tests", "Fancy_Chip-8Tests\Fancy_Chip-8Tests.csproj", "{E398A81F-E2EB-4BF3-B260-C672CBED026E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +17,15 @@ Global
 		{ABFFC949-00B0-45A6-988F-AF9CE9A54BD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ABFFC949-00B0-45A6-988F-AF9CE9A54BD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ABFFC949-00B0-45A6-988F-AF9CE9A54BD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E398A81F-E2EB-4BF3-B260-C672CBED026E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E398A81F-E2EB-4BF3-B260-C672CBED026E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E398A81F-E2EB-4BF3-B260-C672CBED026E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E398A81F-E2EB-4BF3-B260-C672CBED026E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5CACF7B4-AC9A-41EB-ACAA-1EE7B5CCEE48}
 	EndGlobalSection
 EndGlobal

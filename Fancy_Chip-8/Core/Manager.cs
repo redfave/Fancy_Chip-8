@@ -116,7 +116,7 @@ namespace Fancy_Chip_8.Core
                     _outputTimer.Stop();
                 }
                 _systemIsRunning = value;
-                OnPropertyChanged();
+                RaisePropertyChanged();
             }
         }
 
@@ -130,7 +130,7 @@ namespace Fancy_Chip_8.Core
             set
             {
                 _programIsLoaded = value;
-                OnPropertyChanged();
+                RaisePropertyChanged();
             }
         }
 
@@ -144,8 +144,7 @@ namespace Fancy_Chip_8.Core
             private set
             {
                 _outputScreen = value;
-                OnPropertyChanged();
-
+                RaisePropertyChanged();
             }
         }
 
@@ -158,7 +157,7 @@ namespace Fancy_Chip_8.Core
             set
             {
                 _system1.KeyValue = value;
-                OnPropertyChanged();
+                RaisePropertyChanged();
             }
         }
 

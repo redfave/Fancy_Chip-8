@@ -16,7 +16,7 @@ namespace Fancy_Chip_8.Core.Tests
         {
             Chip8System testSystem = new Chip8System();
             testSystem.IncreaseProgramCount();
-            Assert.AreEqual(testSystem.ProgramCounter, testSystem.ProgramStart + 2);
+            Assert.AreEqual(testSystem.ProgramStart + 2, testSystem.ProgramCounter);
         }
 
         [TestMethod()]
@@ -36,7 +36,7 @@ namespace Fancy_Chip_8.Core.Tests
             };
             Chip8System testSystem = new Chip8System();
             testSystem.WriteToMemory(bogusProgramm);
-            Assert.AreEqual(testSystem.Memory, bogusProgramm);
+            Assert.AreEqual(bogusProgramm, testSystem.Memory);
         }
 
         [TestMethod()]
@@ -56,7 +56,7 @@ namespace Fancy_Chip_8.Core.Tests
         {
             Chip8System testSystem = new Chip8System();
             testSystem.JumpToAddressDirectly(0xFFF);
-            Assert.AreEqual(testSystem.ProgramCounter, 0xFFF);
+            Assert.AreEqual(0xFFF, testSystem.ProgramCounter);
         }
 
         [TestMethod()]
@@ -65,8 +65,8 @@ namespace Fancy_Chip_8.Core.Tests
             Chip8System testSystem = new Chip8System();
             ushort programmCounterState = testSystem.ProgramCounter;
             testSystem.CallSubroutine(0xFFF);
-            Assert.AreEqual(testSystem.ProgramCounter, 0xFFF);
-            Assert.AreEqual(programmCounterState, testSystem.Stack.First());
+            Assert.AreEqual(0xFFF, testSystem.ProgramCounter);
+            Assert.AreEqual(testSystem.Stack.First(), programmCounterState);
             Assert.IsTrue(testSystem.Stack.Count == 1);
         }
 
@@ -91,7 +91,9 @@ namespace Fancy_Chip_8.Core.Tests
         [TestMethod()]
         public void SetXTest()
         {
-            Assert.Fail();
+            Chip8System testSystem = new Chip8System();
+            testSystem.SetX(0x2, 0xF2);
+            Assert.AreEqual(0xF2, testSystem.RegisterV[0x2]);
         }
 
         [TestMethod()]
@@ -99,7 +101,7 @@ namespace Fancy_Chip_8.Core.Tests
         {
             Chip8System testSystem = new Chip8System();
             testSystem.AddX(0x2, 0xF2);
-            Assert.AreEqual(testSystem.RegisterV[0x2], 0xF2);
+            Assert.AreEqual(0xF2, testSystem.RegisterV[0x2]);
         }
 
         [TestMethod()]
@@ -127,9 +129,25 @@ namespace Fancy_Chip_8.Core.Tests
         }
 
         [TestMethod()]
-        public void AddXAndYTest()
+        public void AddXAndYWithoutCarrier()
         {
-            Assert.Fail();
+            Chip8System testSystem = new Chip8System();
+            testSystem.SetX(0x1, 0x1);
+            testSystem.SetX(0x2, 0x2);
+            testSystem.AddXAndY(0x1, 0x2);
+            Assert.AreEqual(0x3, testSystem.RegisterV[0x1]);
+            Assert.AreEqual(0x0, testSystem.RegisterV[0xF]);
+        }
+
+        [TestMethod()]
+        public void AddXAndYWithCarrier()
+        {
+            Chip8System testSystem = new Chip8System();
+            testSystem.SetX(0x1, 0x4);
+            testSystem.SetX(0x2, 0xFF);
+            testSystem.AddXAndY(0x1, 0x2);
+            Assert.AreEqual(0x04 - 0x01, testSystem.RegisterV[0x1]);
+            Assert.AreEqual(0x1, testSystem.RegisterV[0xF]);
         }
 
         [TestMethod()]
@@ -223,9 +241,40 @@ namespace Fancy_Chip_8.Core.Tests
         }
 
         [TestMethod()]
-        public void SetProgramCounterToXTest()
+        public void SetMemoryToXThreeDigitTest()
         {
-            Assert.Fail();
+            Chip8System testSystem = new Chip8System();
+            testSystem.SetIndex(0xF2);
+            testSystem.SetX(0x02, 0xC4);
+            testSystem.SetMemoryToX(0x02);
+            Assert.AreEqual(1, testSystem.Memory[testSystem.Index]);
+            Assert.AreEqual(9, testSystem.Memory[testSystem.Index + 1]);
+            Assert.AreEqual(6, testSystem.Memory[testSystem.Index + 2]);
+        }
+
+        [TestMethod()]
+        public void SetMemoryToXTwoDigitTest()
+        {
+            Chip8System testSystem = new Chip8System();
+            testSystem.SetIndex(0xF2);
+            testSystem.SetX(0x02, 0x60);
+            testSystem.SetMemoryToX(0x02);
+            Assert.AreEqual(0, testSystem.Memory[testSystem.Index]);
+            Assert.AreEqual(9, testSystem.Memory[testSystem.Index + 1]);
+            Assert.AreEqual(6, testSystem.Memory[testSystem.Index + 2]);
+        }
+
+        [TestMethod()]
+        public void SetMemoryToXOneDigitTest()
+        {
+            Chip8System testSystem = new Chip8System();
+            testSystem.SetIndex(0xF2);
+            testSystem.SetX(0x02, 0x6);
+            testSystem.SetMemoryToX(0x02);
+            Assert.AreEqual(testSystem.Memory[testSystem.Index], 0);
+            Assert.AreEqual(0, testSystem.Memory[testSystem.Index]);
+            Assert.AreEqual(0, testSystem.Memory[testSystem.Index + 1]);
+            Assert.AreEqual(6, testSystem.Memory[testSystem.Index + 2]);
         }
 
         [TestMethod()]
@@ -236,7 +285,7 @@ namespace Fancy_Chip_8.Core.Tests
             testSystem.SetDelayTimer(1);
             byte delayTimerStartState = testSystem.DelayTimer;
             testSystem.DelayTimerDecrease();
-            Assert.AreEqual(delayTimerStartState, testSystem.DelayTimer + 1);
+            Assert.AreEqual(testSystem.DelayTimer + 1, delayTimerStartState);
         }
 
         [TestMethod()]
@@ -247,7 +296,7 @@ namespace Fancy_Chip_8.Core.Tests
             testSystem.SetSoundTimer(1);
             byte soundTimerStartState = testSystem.SoundTimer;
             testSystem.SoundTimerDecrease();
-            Assert.AreEqual(soundTimerStartState, testSystem.SoundTimer + 1);
+            Assert.AreEqual(testSystem.SoundTimer + 1, soundTimerStartState);
         }
     }
 }

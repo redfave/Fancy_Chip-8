@@ -341,7 +341,7 @@ namespace Fancy_Chip_8.Core
                             _system1.SetIndexToSpriteAddress(x);
                             break;
                         case 0x33:
-                            _system1.SetProgramCounterToX(x);
+                            _system1.SetMemoryToX(x);
                             break;
                         case 0x55:
                             //TODO

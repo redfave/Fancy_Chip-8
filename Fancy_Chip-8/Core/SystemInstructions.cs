@@ -110,11 +110,11 @@ namespace Fancy_Chip_8.Core
 
         public void AddXAndY(byte x, byte y)
         {
-            ushort sum = (ushort)(x + y);
+            ushort sum = Convert.ToUInt16(RegisterV[x] + RegisterV[y]);
             if (sum > 0xFF)
             {
                 RegisterV[0xF] = 0x01;
-                RegisterV[x] = Convert.ToByte(sum);
+                RegisterV[x] = Convert.ToByte(sum & 0xFF);
             }
             else
             {
@@ -263,17 +263,11 @@ namespace Fancy_Chip_8.Core
             Index = Convert.ToUInt16(x * 5);
         }
 
-        public void SetProgramCounterToX(byte x)
+        public void SetMemoryToX(byte x)
         {
-            Memory[ProgramCounter] = Convert.ToByte(GetNthDigit(Convert.ToInt32(RegisterV[x]), 3, 1));
-            Memory[ProgramCounter + 1] = Convert.ToByte(GetNthDigit(Convert.ToInt32(RegisterV[x]), 2, 1));
-            Memory[ProgramCounter + 2] = Convert.ToByte(GetNthDigit(Convert.ToInt32(RegisterV[x]), 1, 1));
-        }
-
-        //http://stackoverflow.com/a/16094891/5329332
-        private int GetNthDigit(int number, int highestDigit, int numDigits)
-        {
-            return (number / Convert.ToInt32(Math.Pow(10, highestDigit - numDigits)) % Convert.ToInt32(Math.Pow(10, numDigits)));
+            Memory[Index] = (byte) (RegisterV[x] / 100);
+            Memory[Index + 1] = (byte)((RegisterV[x] / 10) % 10);
+            Memory[Index + 2] = (byte)((RegisterV[x] % 100) % 10);
         }
 
         public void DelayTimerDecrease() => DelayTimer--;

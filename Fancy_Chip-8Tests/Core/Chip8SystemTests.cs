@@ -30,19 +30,28 @@ namespace Fancy_Chip_8.Core.Tests
         [TestMethod()]
         public void WriteToMemoryTest()
         {
-            Random random = new Random();
             byte[] bogusProgramm = new byte[]{
                 0x41, 0xF6, 0x3C, 0x57, 0x72, 0xF2, 0x3D, 0xD9
             };
             Chip8System testSystem = new Chip8System();
             testSystem.WriteToMemory(bogusProgramm);
-            Assert.AreEqual(bogusProgramm, testSystem.Memory);
+            CollectionAssert.AreEqual(bogusProgramm.ToList(), testSystem.Memory.Skip(testSystem.ProgramStart).Take(8).ToList());
         }
 
         [TestMethod()]
         public void ClearDisplayTest()
         {
-            Assert.Fail();
+            //TODO Test should fail in this state 
+            Chip8System testSystem = new Chip8System();
+            testSystem.SetIndexToSpriteAddress(0xA);
+            testSystem.DisplaySprite(10, 10, 5);
+            foreach (bool x in testSystem.Screen)
+            {
+                if (x == true)
+                {
+                    Assert.Fail();
+                }
+            }
         }
 
         [TestMethod()]
@@ -237,7 +246,16 @@ namespace Fancy_Chip_8.Core.Tests
         [TestMethod()]
         public void SetIndexToSpriteAddressTest()
         {
-            Assert.Fail();
+            Chip8System testSystem = new Chip8System();
+            testSystem.SetIndexToSpriteAddress(0xA);
+            Assert.AreEqual(0xA * 5, testSystem.Index);
+        }
+
+        [TestMethod()]
+        public void SetIndexToSpriteAddressExceptionTest()
+        {
+            Chip8System testSystem = new Chip8System();
+            Assert.ThrowsException<ArgumentException>(() => testSystem.SetIndexToSpriteAddress(0x10));
         }
 
         [TestMethod()]
@@ -275,6 +293,13 @@ namespace Fancy_Chip_8.Core.Tests
             Assert.AreEqual(0, testSystem.Memory[testSystem.Index]);
             Assert.AreEqual(0, testSystem.Memory[testSystem.Index + 1]);
             Assert.AreEqual(6, testSystem.Memory[testSystem.Index + 2]);
+        }
+
+        [TestMethod()]
+        public void SetMemoryToXExceptionTest()
+        {
+            Chip8System testSystem = new Chip8System();
+            Assert.ThrowsException<ArgumentException>(() => testSystem.SetMemoryToX(0x10));
         }
 
         [TestMethod()]

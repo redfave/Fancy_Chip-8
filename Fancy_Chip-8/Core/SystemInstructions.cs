@@ -24,6 +24,10 @@ namespace Fancy_Chip_8.Core
 
         public void WriteToMemory(byte[] program)
         {
+            if (program.Length > 4096)
+            {
+                throw new ArgumentOutOfRangeException("program", "The program doesn't fit in memory");
+            }
             logger.Debug("");
             Array.Copy(program, 0, Memory, ProgramCounter, program.Length);
         }
@@ -46,17 +50,20 @@ namespace Fancy_Chip_8.Core
 
         public void JumpToAddressDirectly(ushort addr)
         {
+            EvaluateThrowingExceptionForAddress(addr);
             ProgramCounter = addr;
         }
 
         public void CallSubroutine(ushort addr)
         {
+            EvaluateThrowingExceptionForAddress(addr);
             Stack.Push(ProgramCounter);
             ProgramCounter = addr;
         }
 
         public void SkipIfXIsEqual(byte x, byte kk)
         {
+            EvaluateThrowingExceptionForRegisterX(x);
             if (RegisterV[x] == kk)
             {
                 IncreaseProgramCount();
@@ -65,6 +72,7 @@ namespace Fancy_Chip_8.Core
 
         public void SkipIfXIsNotEqual(byte x, byte kk)
         {
+            EvaluateThrowingExceptionForRegisterX(x);
             if (RegisterV[x] != kk)
             {
                 IncreaseProgramCount();
@@ -73,6 +81,7 @@ namespace Fancy_Chip_8.Core
 
         public void SkipIfXIsEqualY(byte x, byte y)
         {
+            EvaluateThrowingExceptionForRegisterXAndY(x, y);
             if (RegisterV[x] == RegisterV[y])
             {
                 IncreaseProgramCount();
@@ -81,35 +90,42 @@ namespace Fancy_Chip_8.Core
 
         public void SetX(byte x, byte kk)
         {
+            EvaluateThrowingExceptionForRegisterX(x);
             RegisterV[x] = kk;
         }
 
         public void AddX(byte x, byte kk)
         {
+            EvaluateThrowingExceptionForRegisterX(x);
             RegisterV[x] += kk;
         }
 
         public void SetXToY(byte x, byte y)
         {
+            EvaluateThrowingExceptionForRegisterXAndY(x, y);
             RegisterV[x] = RegisterV[y];
         }
         public void OrXAndY(byte x, byte y)
         {
+            EvaluateThrowingExceptionForRegisterXAndY(x, y);
             RegisterV[x] = (byte)(RegisterV[x] | RegisterV[y]);
         }
 
         public void AndXAndY(byte x, byte y)
         {
+            EvaluateThrowingExceptionForRegisterXAndY(x, y);
             RegisterV[x] = (byte)(RegisterV[x] & RegisterV[y]);
         }
 
         public void XorXAndY(byte x, byte y)
         {
+            EvaluateThrowingExceptionForRegisterXAndY(x, y);
             RegisterV[x] = (byte)(RegisterV[x] ^ RegisterV[y]);
         }
 
         public void AddXAndY(byte x, byte y)
         {
+            EvaluateThrowingExceptionForRegisterXAndY(x, y);
             ushort sum = Convert.ToUInt16(RegisterV[x] + RegisterV[y]);
             if (sum > 0xFF)
             {
@@ -125,6 +141,7 @@ namespace Fancy_Chip_8.Core
 
         public void SubYFromX(byte x, byte y)
         {
+            EvaluateThrowingExceptionForRegisterXAndY(x, y);
             if (RegisterV[x] > RegisterV[y])
             {
                 RegisterV[0xF] = 0x01;
@@ -138,6 +155,7 @@ namespace Fancy_Chip_8.Core
 
         public void ShiftXRight(byte x)
         {
+            EvaluateThrowingExceptionForRegisterX(x);
             RegisterV[0xF] = (byte)(RegisterV[x] & 0x01);
             RegisterV[x] = (byte)(RegisterV[x] >> 1);
         }
@@ -145,6 +163,7 @@ namespace Fancy_Chip_8.Core
 
         public void SubXFromY(byte x, byte y)
         {
+            EvaluateThrowingExceptionForRegisterXAndY(x, y);
             if (RegisterV[y] > RegisterV[x])
             {
                 RegisterV[0xF] = 0x01;
@@ -158,12 +177,14 @@ namespace Fancy_Chip_8.Core
 
         public void ShiftXLeft(byte x)
         {
+            EvaluateThrowingExceptionForRegisterX(x);
             RegisterV[0xF] = (byte)(RegisterV[x] & 0x80 >> 7);
             RegisterV[x] = (byte)(RegisterV[x] << 1);
         }
 
         public void SkipNextInstruction(byte x, byte y)
         {
+            EvaluateThrowingExceptionForRegisterXAndY(x, y);
             if (RegisterV[x] != RegisterV[y])
             {
                 IncreaseProgramCount();
@@ -182,6 +203,7 @@ namespace Fancy_Chip_8.Core
 
         public void SetXToRandomNumber(byte x, byte kk)
         {
+            EvaluateThrowingExceptionForRegisterX(x);
             RegisterV[x] = (byte)(kk & new Random().Next(0x00, 0x100));
         }
 
@@ -189,15 +211,15 @@ namespace Fancy_Chip_8.Core
         {
             if (n > 15)
             {
-                throw new ArgumentException("The sprite can't be higher than 15 lines", "n");
+                throw new ArgumentOutOfRangeException("n", "The sprite can't be higher than 15 lines");
             }
             if (0 >= x & x <= ScreenWidth == false)
             {
-                throw new ArgumentException("Can't draw outside the screen", "x");
+                throw new ArgumentOutOfRangeException("x", "Can't draw outside the screen");
             }
             if (0 >= y & y <= ScreenHeight == false)
             {
-                throw new ArgumentException("Can't draw outside the screen", "y");
+                throw new ArgumentOutOfRangeException("y", "Can't draw outside the screen");
             }
             byte[] sprite = new byte[n //+ 1
                     ];
@@ -240,32 +262,41 @@ namespace Fancy_Chip_8.Core
 
         public void SetXToDelayTime(byte x)
         {
+            EvaluateThrowingExceptionForRegisterX(x);
             RegisterV[x] = DelayTimer;
         }
 
         public void SetDelayTimer(byte x)
         {
+            EvaluateThrowingExceptionForRegisterX(x);
             DelayTimer = RegisterV[x];
         }
 
         public void SetSoundTimer(byte x)
         {
+            EvaluateThrowingExceptionForRegisterX(x);
             SoundTimer = RegisterV[x];
         }
 
         public void AddXToIndex(byte x)
         {
+            EvaluateThrowingExceptionForRegisterX(x);
             Index += RegisterV[x];
         }
 
         public void SetIndexToSpriteAddress(byte x)
         {
+            if (x > 0xF)
+            {
+                throw new ArgumentOutOfRangeException("x", "No more sprites above 0xF available");
+            }
             Index = Convert.ToUInt16(x * 5);
         }
 
         public void SetMemoryToX(byte x)
         {
-            Memory[Index] = (byte) (RegisterV[x] / 100);
+            EvaluateThrowingExceptionForRegisterX(x);
+            Memory[Index] = (byte)(RegisterV[x] / 100);
             Memory[Index + 1] = (byte)((RegisterV[x] / 10) % 10);
             Memory[Index + 2] = (byte)((RegisterV[x] % 100) % 10);
         }
@@ -274,6 +305,30 @@ namespace Fancy_Chip_8.Core
 
         public void SoundTimerDecrease() => SoundTimer--;
 
+        private void EvaluateThrowingExceptionForRegisterX(byte x)
+        {
+            if (x > 0xF)
+            {
+                throw new ArgumentOutOfRangeException("x", "No register available above 0xF");
+            }
+        }
+
+        private void EvaluateThrowingExceptionForRegisterXAndY(byte x, byte y)
+        {
+            EvaluateThrowingExceptionForRegisterX(x);
+            if (y > 0xF)
+            {
+                throw new ArgumentOutOfRangeException("y", "No register available above 0xF");
+            }
+        }
+
+        private void EvaluateThrowingExceptionForAddress(ushort addr)
+        {
+            if (addr > 4096)
+            {
+                throw new ArgumentOutOfRangeException("addr", "Invalid memory location");
+            }
+        }
     }
 }
 

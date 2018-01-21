@@ -57,7 +57,15 @@ namespace Fancy_Chip_8.Core.Tests
         [TestMethod()]
         public void ReturnFromSubroutineTest()
         {
-            Assert.Fail();
+            Chip8System testSystem = new Chip8System();
+            testSystem.JumpToAddressDirectly(0xFF1);
+            ushort programmCounterState = testSystem.ProgramCounter;
+            testSystem.CallSubroutine(0xFFF);
+            testSystem.AddX(0x02, 0xF2);
+            testSystem.SetMemoryToX(0x02);
+            testSystem.ReturnFromSubroutine();
+            Assert.AreEqual(programmCounterState, testSystem.ProgramCounter);
+            Assert.AreEqual(0, testSystem.Stack.Count);
         }
 
         [TestMethod()]

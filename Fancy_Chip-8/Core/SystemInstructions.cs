@@ -26,7 +26,7 @@ namespace Fancy_Chip_8.Core
         {
             if (program.Length > 4096)
             {
-                throw new ArgumentOutOfRangeException("program", "The program doesn't fit in memory");
+                throw new ArgumentException("Program doesn't fit in memory", "program");
             }
             logger.Debug("");
             Array.Copy(program, 0, Memory, ProgramCounter, program.Length);

@@ -234,7 +234,6 @@ namespace Fancy_Chip_8.Core
             byte y = (byte)(lowerByte >> 4);
             byte x = (byte)(_system1.Memory[_system1.ProgramCounter] & 0x0F);
             byte instructionType = (byte)(_system1.Memory[_system1.ProgramCounter] >> 4);
-            _system1.IncreaseProgramCount();
             switch (instructionType)
             {
                 case 0x0:
@@ -352,6 +351,7 @@ namespace Fancy_Chip_8.Core
                     }
                     break;
             }
+            _system1.IncreaseProgramCount();
         }
 
         private void DrawBitMap()

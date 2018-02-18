@@ -213,51 +213,37 @@ namespace Fancy_Chip_8.Core
             {
                 throw new ArgumentOutOfRangeException("n", "The sprite can't be higher than 15 lines");
             }
-            if (0 >= RegisterV[x] & RegisterV[x] <= ScreenWidth == false)
+            if (((0 <= RegisterV[x]) && (RegisterV[x] < ScreenWidth)) == false)
             {
                 throw new ArgumentOutOfRangeException("x", "Can't draw outside the screen");
             }
-            if (0 >= RegisterV[y] & RegisterV[y] <= ScreenHeight == false)
+            if (((0 <= RegisterV[y]) && (RegisterV[y] < ScreenHeight)) == false)
             {
                 throw new ArgumentOutOfRangeException("y", "Can't draw outside the screen");
             }
             RegisterV[0xF] = 0;
-            byte[] sprite = new byte[n //+ 1
-                    ];
+            byte[] sprite = new byte[n];
             Array.Copy(Memory, Index, sprite, 0, Convert.ToInt32(n));
-            //Array.Copy(Memory, ProgramCounter, sprite, 0, Convert.ToInt32(n));
             for (int i = 0; i < sprite.Length; i++)
             {
                 BitArray spriteRow = new BitArray(new byte[] { sprite[i] });
                 for (int j = 0; j < 8; j++)
                 {
-                    if (RegisterV[x] + j + 2 <= ScreenWidth && RegisterV[y] + i + 2 <= ScreenHeight)
-                    {
-                        SetScreenPixel(spriteRow.Get(j), RegisterV[x], RegisterV[y]);
-                    }
-                    else if (RegisterV[x] + j + 2 > ScreenWidth && RegisterV[y] + i + 2 > ScreenHeight)
-                    {
-                        SetScreenPixel(spriteRow.Get(j), Convert.ToByte(j - ScreenWidth - 1 - RegisterV[x]), Convert.ToByte(i - ScreenHeight - 1 - RegisterV[y]));
-                    }
-                    else if (RegisterV[x] + j + 2 > ScreenWidth)
-                    {
-                        SetScreenPixel(spriteRow.Get(j), Convert.ToByte(j - ScreenWidth - 1 - RegisterV[x]), RegisterV[y]);
-                    }
-                    else if (y + i + 2 > ScreenHeight)
-                    {
-                        SetScreenPixel(spriteRow.Get(j), RegisterV[x], Convert.ToByte(i - ScreenHeight - 1 - RegisterV[y]));
-                    }
+                    SetScreenPixel(spriteRow.Get(j), Convert.ToByte(RegisterV[x] + j), Convert.ToByte(RegisterV[y] + i));
                 }
             }
         }
 
         private void SetScreenPixel(bool pixelValue, byte screenX, byte screenY)
         {
-            bool oldPixelValue = Screen[screenX, screenY];
-            Screen[screenX, screenY] ^= pixelValue;
-            if (oldPixelValue != Screen[screenX, screenY])
+            if ((screenX < ScreenWidth) && (screenY < ScreenHeight)) //Ignore parts of sprites drawn outside of the screen
             {
-                RegisterV[0x0F] = Convert.ToByte(true);
+                bool oldPixelValue = Screen[screenX, screenY];
+                Screen[screenX, screenY] ^= pixelValue; //XOR the sprite pixel over the existing pixel
+                if (oldPixelValue != Screen[screenX, screenY])
+                {
+                    RegisterV[0x0F] = Convert.ToByte(true);
+                }
             }
         }
 

@@ -213,14 +213,14 @@ namespace Fancy_Chip_8.Core
             {
                 throw new ArgumentOutOfRangeException("n", "The sprite can't be higher than 15 lines");
             }
-            if (((0 <= RegisterV[x]) && (RegisterV[x] < ScreenWidth)) == false)
-            {
-                throw new ArgumentOutOfRangeException("x", "Can't draw outside the screen");
-            }
-            if (((0 <= RegisterV[y]) && (RegisterV[y] < ScreenHeight)) == false)
-            {
-                throw new ArgumentOutOfRangeException("y", "Can't draw outside the screen");
-            }
+            //if (((0 <= RegisterV[x]) && (RegisterV[x] < ScreenWidth)) == false)
+            //{
+            //    throw new ArgumentOutOfRangeException("x", "Can't draw outside the screen");
+            //}
+            //if (((0 <= RegisterV[y]) && (RegisterV[y] < ScreenHeight)) == false)
+            //{
+            //    throw new ArgumentOutOfRangeException("y", "Can't draw outside the screen");
+            //}
             RegisterV[0xF] = 0;
             byte[] sprite = new byte[n];
             Array.Copy(Memory, Index, sprite, 0, Convert.ToInt32(n));
@@ -229,7 +229,7 @@ namespace Fancy_Chip_8.Core
                 BitArray spriteRow = new BitArray(new byte[] { sprite[i] });
                 for (int j = 0; j < 8; j++)
                 {
-                    SetScreenPixel(spriteRow.Get(j), Convert.ToByte(RegisterV[x] + j), Convert.ToByte(RegisterV[y] + i));
+                    SetScreenPixel(spriteRow.Get(j),(byte) (RegisterV[x] + j), (byte)(RegisterV[y] + i));
                 }
             }
         }
